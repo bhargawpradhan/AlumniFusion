@@ -186,7 +186,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MessageSquare, Users, Send, Search, UserPlus, Check, Sparkles } from 'lucide-react'
+import { MessageSquare, Users, Send, Search, UserPlus, Check, Sparkles, Wifi, X } from 'lucide-react'
 
 const GlassCard = ({ children, className = '' }) => (
   <div className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 ${className}`}>
@@ -217,6 +217,10 @@ const NetworkingHub = () => {
   const [message, setMessage] = useState('')
   const [connectedPeople, setConnectedPeople] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
+  const [directChatPerson, setDirectChatPerson] = useState(null)
+  const [directMessage, setDirectMessage] = useState('')
+  const [directMessages, setDirectMessages] = useState({})
+  const [showIconBurst, setShowIconBurst] = useState(false)
 
   const [chatMessages, setChatMessages] = useState({
     general: [
@@ -245,12 +249,14 @@ const NetworkingHub = () => {
   ]
 
   const suggestions = [
-    { name: 'Sarah Williams', position: 'Product Manager', company: 'Microsoft', mutual: 5, avatar: 'SW' },
-    { name: 'David Brown', position: 'Software Engineer', company: 'Amazon', mutual: 3, avatar: 'DB' },
-    { name: 'Emily Davis', position: 'Data Scientist', company: 'Google', mutual: 8, avatar: 'ED' },
-    { name: 'Alex Kumar', position: 'UX Designer', company: 'Apple', mutual: 4, avatar: 'AK' },
-    { name: 'Lisa Chen', position: 'DevOps Engineer', company: 'Netflix', mutual: 6, avatar: 'LC' },
-    { name: 'Ryan Patel', position: 'ML Engineer', company: 'Tesla', mutual: 2, avatar: 'RP' },
+    { name: 'Sarah Williams', position: 'Product Manager', company: 'Microsoft', mutual: 5, avatar: 'SW', isActive: true },
+    { name: 'David Brown', position: 'Software Engineer', company: 'Amazon', mutual: 3, avatar: 'DB', isActive: false, lastSeen: '2 hours ago' },
+    { name: 'Emily Davis', position: 'Data Scientist', company: 'Google', mutual: 8, avatar: 'ED', isActive: true },
+    { name: 'Alex Kumar', position: 'UX Designer', company: 'Apple', mutual: 4, avatar: 'AK', isActive: true },
+    { name: 'Lisa Chen', position: 'DevOps Engineer', company: 'Netflix', mutual: 6, avatar: 'LC', isActive: false, lastSeen: '1 day ago' },
+    { name: 'Ryan Patel', position: 'ML Engineer', company: 'Tesla', mutual: 2, avatar: 'RP', isActive: true },
+    { name: 'Priya Sharma', position: 'Technical Lead', company: 'Meta', mutual: 7, avatar: 'PS', isActive: true },
+    { name: 'Michael Jones', position: 'Cloud Architect', company: 'AWS', mutual: 5, avatar: 'MJ', isActive: false, lastSeen: '5 minutes ago' },
   ]
 
   const handleSend = () => {
@@ -274,6 +280,47 @@ const NetworkingHub = () => {
   const handleConnect = (person) => {
     if (!connectedPeople.includes(person.name)) {
       setConnectedPeople([...connectedPeople, person.name])
+    }
+  }
+
+  const handleStartChat = (person) => {
+    setDirectChatPerson(person)
+    // Initialize empty message array for this person if doesn't exist
+    if (!directMessages[person.name]) {
+      setDirectMessages({
+        ...directMessages,
+        [person.name]: []
+      })
+    }
+  }
+
+  const handleSendDirectMessage = () => {
+    if (directMessage.trim() && directChatPerson) {
+      const newMessage = {
+        id: (directMessages[directChatPerson.name]?.length || 0) + 1,
+        text: directMessage,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        isMine: true
+      }
+      setDirectMessages({
+        ...directMessages,
+        [directChatPerson.name]: [...(directMessages[directChatPerson.name] || []), newMessage]
+      })
+      setDirectMessage('')
+
+      // Simulate a response after 2 seconds
+      setTimeout(() => {
+        const response = {
+          id: (directMessages[directChatPerson.name]?.length || 0) + 2,
+          text: `Thanks for reaching out! I'm currently ${directChatPerson.position} at ${directChatPerson.company}.`,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          isMine: false
+        }
+        setDirectMessages(prev => ({
+          ...prev,
+          [directChatPerson.name]: [...(prev[directChatPerson.name] || []), response]
+        }))
+      }, 2000)
     }
   }
 
@@ -448,7 +495,13 @@ const NetworkingHub = () => {
               {groups.map((group, index) => (
                 <motion.button
                   key={group.id}
-                  onClick={() => setActiveGroup(group.id)}
+                  onClick={() => {
+                    if (activeGroup !== group.id) {
+                      setShowIconBurst(true)
+                      setTimeout(() => setShowIconBurst(false), 1500)
+                    }
+                    setActiveGroup(group.id)
+                  }}
                   className={`w-full text-left p-3 rounded-lg transition-all relative overflow-hidden ${activeGroup === group.id
                     ? `bg-gradient-to-r ${group.color} text-white shadow-lg`
                     : 'hover:bg-white/20'
@@ -536,14 +589,17 @@ const NetworkingHub = () => {
 
             <div className="border-b border-white/20 pb-4 mb-4 relative z-10">
               <motion.h3
+                key={activeGroup}
                 className="text-xl font-bold text-gray-900 dark:text-white flex items-center"
-                animate={{ scale: [1, 1.05, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', damping: 15 }}
               >
                 <motion.span
                   className="text-3xl mr-2"
-                  animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  initial={{ rotate: -180, scale: 0 }}
+                  animate={{ rotate: 0, scale: 1 }}
+                  transition={{ type: 'spring', damping: 10, delay: 0.1 }}
                 >
                   {groups.find(g => g.id === activeGroup)?.icon}
                 </motion.span>
@@ -552,6 +608,41 @@ const NetworkingHub = () => {
             </div>
 
             <div className="flex-1 overflow-y-auto space-y-4 mb-4 relative z-10">
+              {/* Flying icon particles when switching groups - from chat box center */}
+              <AnimatePresence>
+                {showIconBurst && (
+                  <>
+                    {Array.from({ length: 8 }, (_, i) => (
+                      <motion.div
+                        key={`burst-${i}`}
+                        className="absolute text-5xl pointer-events-none"
+                        style={{
+                          left: '50%',
+                          top: '50%',
+                          zIndex: 50,
+                          transformOrigin: 'center'
+                        }}
+                        initial={{ x: '-50%', y: '-50%', scale: 1, opacity: 1 }}
+                        animate={{
+                          x: `calc(-50% + ${Math.cos((i / 8) * Math.PI * 2) * 250}px)`,
+                          y: `calc(-50% + ${Math.sin((i / 8) * Math.PI * 2) * 250}px)`,
+                          scale: [1, 1.8, 0],
+                          opacity: [1, 0.9, 0],
+                          rotate: [0, 720]
+                        }}
+                        exit={{ opacity: 0, scale: 0 }}
+                        transition={{
+                          duration: 1.5,
+                          ease: [0.34, 1.56, 0.64, 1]
+                        }}
+                      >
+                        {groups.find(g => g.id === activeGroup)?.icon}
+                      </motion.div>
+                    ))}
+                  </>
+                )}
+              </AnimatePresence>
+
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeGroup}
@@ -653,6 +744,192 @@ const NetworkingHub = () => {
         </motion.div>
       </div>
 
+      {/* Active Alumni Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 100 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="mt-8"
+      >
+        <GlassCard className="relative overflow-hidden">
+          {/* Bubbles inside active alumni card */}
+          {Array.from({ length: 8 }, (_, i) => (
+            <motion.div
+              key={i}
+              className="absolute rounded-full pointer-events-none"
+              style={{
+                width: Math.random() * 30 + 15,
+                height: Math.random() * 30 + 15,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                background: 'radial-gradient(circle at 30% 30%, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.05))',
+              }}
+              animate={{
+                y: [0, -40, 0],
+                x: [0, Math.random() * 20 - 10, 0],
+                scale: [1, 1.3, 1],
+                opacity: [0.3, 0.6, 0.3]
+              }}
+              transition={{
+                duration: 5 + i * 0.4,
+                repeat: Infinity,
+                delay: i * 0.2
+              }}
+            />
+          ))}
+
+          <div className="flex items-center justify-between mb-6 relative z-10">
+            <motion.h3
+              className="text-xl font-bold text-gray-900 dark:text-white flex items-center"
+              animate={{ x: [0, 5, 0] }}
+              transition={{ duration: 3, repeat: Infinity }}
+            >
+              <motion.div
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <Wifi className="mr-2 text-green-500" size={24} />
+              </motion.div>
+              Active Alumni
+              <motion.span
+                className="ml-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm px-3 py-1 rounded-full"
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                {suggestions.filter(p => p.isActive).length} Online
+              </motion.span>
+            </motion.h3>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 relative z-10">
+            {suggestions
+              .filter(person => person.isActive)
+              .map((person, index) => {
+                const isConnected = connectedPeople.includes(person.name)
+                return (
+                  <motion.div
+                    key={person.name}
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.05, type: 'spring' }}
+                    whileHover={{ scale: 1.08, y: -10 }}
+                    className="p-4 rounded-lg bg-white/10 backdrop-blur-md border border-green-500/30 relative overflow-hidden"
+                  >
+                    {/* Online status indicator - pulsing green dot */}
+                    <motion.div
+                      className="absolute top-2 right-2 z-20"
+                      animate={{ scale: [1, 1.3, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <div className="relative">
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <motion.div
+                          className="absolute inset-0 bg-green-500/40 rounded-full"
+                          animate={{ scale: [1, 2, 1], opacity: [0.7, 0, 0.7] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        />
+                      </div>
+                    </motion.div>
+
+                    {/* Bubbles inside person card */}
+                    {Array.from({ length: 2 }, (_, i) => (
+                      <motion.div
+                        key={i}
+                        className="absolute rounded-full"
+                        style={{
+                          width: 12,
+                          height: 12,
+                          left: `${Math.random() * 100}%`,
+                          top: `${Math.random() * 100}%`,
+                          background: 'radial-gradient(circle at 30% 30%, rgba(34, 197, 94, 0.3), rgba(34, 197, 94, 0.1))',
+                        }}
+                        animate={{
+                          y: [0, -20, 0],
+                          scale: [1, 1.5, 1],
+                          opacity: [0.3, 0.6, 0.3]
+                        }}
+                        transition={{
+                          duration: 3 + i,
+                          repeat: Infinity
+                        }}
+                      />
+                    ))}
+
+                    {isConnected && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute top-2 left-2 bg-sky-500 rounded-full p-1 z-10"
+                      >
+                        <Check size={14} className="text-white" />
+                      </motion.div>
+                    )}
+
+                    <div className="flex flex-col items-center text-center space-y-3 relative z-10">
+                      <motion.div
+                        className="w-16 h-16 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center text-white font-bold relative shadow-lg"
+                        whileHover={{ rotate: 360, scale: 1.2 }}
+                        transition={{ duration: 0.6 }}
+                      >
+                        {/* Rotating ring around avatar */}
+                        <motion.div
+                          className="absolute inset-0 rounded-full border-2 border-green-400/50"
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+                        />
+                        {person.avatar}
+                      </motion.div>
+
+                      <div>
+                        <h4 className="font-semibold text-gray-900 dark:text-white text-sm">{person.name}</h4>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">{person.position}</p>
+                        <p className="text-xs text-gray-500">{person.company}</p>
+                      </div>
+
+                      <p className="text-xs text-green-500 flex items-center font-medium">
+                        <motion.div
+                          className="w-2 h-2 bg-green-500 rounded-full mr-1"
+                          animate={{ opacity: [1, 0.3, 1] }}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                        />
+                        Active Now
+                      </p>
+
+                      <motion.button
+                        onClick={() => person.isActive ? handleStartChat(person) : handleConnect(person)}
+                        className={`w-full px-3 py-2 rounded-lg flex items-center justify-center space-x-2 relative overflow-hidden z-10 text-sm ${isConnected
+                          ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white'
+                          : 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white'
+                          }`}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        disabled={isConnected && !person.isActive}
+                      >
+                        {person.isActive ? (
+                          <>
+                            <MessageSquare size={14} />
+                            <span>Chat Now</span>
+                          </>
+                        ) : isConnected ? (
+                          <>
+                            <Check size={14} />
+                            <span>Connected</span>
+                          </>
+                        ) : (
+                          <>
+                            <UserPlus size={14} />
+                            <span>Connect</span>
+                          </>
+                        )}
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                )
+              })}
+          </div>
+        </GlassCard>
+      </motion.div>
+
       {/* People You May Know */}
       <motion.div
         initial={{ opacity: 0, y: 100 }}
@@ -729,6 +1006,28 @@ const NetworkingHub = () => {
                   whileHover={{ scale: 1.08, y: -10 }}
                   className="p-4 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 relative overflow-hidden"
                 >
+                  {/* Status indicator */}
+                  {person.isActive ? (
+                    <motion.div
+                      className="absolute top-2 right-2 z-20"
+                      animate={{ scale: [1, 1.3, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <div className="relative">
+                        <div className="w-2.5 h-2.5 bg-green-500 rounded-full"></div>
+                        <motion.div
+                          className="absolute inset-0 bg-green-500/40 rounded-full"
+                          animate={{ scale: [1, 2.5, 1], opacity: [0.7, 0, 0.7] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        />
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <div className="absolute top-2 right-2 z-20">
+                      <div className="w-2.5 h-2.5 bg-gray-400 rounded-full"></div>
+                    </div>
+                  )}
+
                   {/* Bubbles inside person card */}
                   {Array.from({ length: 3 }, (_, i) => (
                     <motion.div
@@ -800,8 +1099,27 @@ const NetworkingHub = () => {
                   </div>
 
                   <p className="text-xs text-gray-600 dark:text-gray-400 mb-3 flex items-center relative z-10">
-                    <Sparkles size={12} className="mr-1 text-yellow-500" />
-                    {person.mutual} mutual connections
+                    {person.isActive ? (
+                      <>
+                        <motion.div
+                          className="w-2 h-2 bg-green-500 rounded-full mr-1"
+                          animate={{ opacity: [1, 0.3, 1] }}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                        />
+                        <span className="text-green-500 font-medium">Active Now</span>
+                        <span className="mx-2">•</span>
+                        <Sparkles size={12} className="mr-1 text-yellow-500" />
+                        {person.mutual} mutual
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full mr-1"></div>
+                        <span className="text-gray-500">Last seen {person.lastSeen}</span>
+                        <span className="mx-2">•</span>
+                        <Sparkles size={12} className="mr-1 text-yellow-500" />
+                        {person.mutual} mutual
+                      </>
+                    )}
                   </p>
 
                   <motion.button
@@ -832,6 +1150,155 @@ const NetworkingHub = () => {
           </div>
         </GlassCard>
       </motion.div>
+
+      {/* Direct Chat Modal */}
+      <AnimatePresence>
+        {directChatPerson && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4"
+            onClick={() => setDirectChatPerson(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: 'spring', damping: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white/10 backdrop-blur-2xl rounded-3xl p-6 max-w-2xl w-full max-h-[80vh] shadow-2xl border border-white/20 flex flex-col overflow-hidden relative"
+            >
+              {/* Background bubbles */}
+              {Array.from({ length: 6 }, (_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute rounded-full pointer-events-none"
+                  style={{
+                    width: Math.random() * 40 + 20,
+                    height: Math.random() * 40 + 20,
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                    background: 'radial-gradient(circle at 30% 30%, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.05))',
+                  }}
+                  animate={{
+                    y: [0, -30, 0],
+                    x: [0, Math.random() * 20 - 10, 0],
+                    scale: [1, 1.2, 1],
+                    opacity: [0.3, 0.5, 0.3]
+                  }}
+                  transition={{
+                    duration: 4 + i,
+                    repeat: Infinity,
+                    delay: i * 0.3
+                  }}
+                />
+              ))}
+
+              {/* Header */}
+              <div className="flex items-center justify-between mb-4 relative z-10 border-b border-white/20 pb-4">
+                <div className="flex items-center space-x-3">
+                  <motion.div
+                    className="w-12 h-12 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center text-white font-bold relative"
+                    animate={{ rotate: [0, 360] }}
+                    transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                  >
+                    <motion.div
+                      className="absolute inset-0 rounded-full border-2 border-green-400"
+                      animate={{ rotate: -360 }}
+                      transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+                    />
+                    {directChatPerson.avatar}
+                  </motion.div>
+                  <div>
+                    <h3 className="text-lg font-bold text-white">{directChatPerson.name}</h3>
+                    <div className="flex items-center text-sm text-gray-300">
+                      <motion.div
+                        className="w-2 h-2 bg-green-500 rounded-full mr-2"
+                        animate={{ opacity: [1, 0.3, 1] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                      />
+                      Active Now
+                    </div>
+                  </div>
+                </div>
+                <motion.button
+                  onClick={() => setDirectChatPerson(null)}
+                  className="p-2 bg-white/10 hover:bg-white/20 rounded-xl"
+                  whileHover={{ scale: 1.1, rotate: 90 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <X size={24} className="text-white" />
+                </motion.button>
+              </div>
+
+              {/* Messages Area */}
+              <div className="flex-1 overflow-y-auto space-y-4 mb-4 relative z-10">
+                {(directMessages[directChatPerson.name] || []).length === 0 ? (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="text-center py-12"
+                  >
+                    <MessageSquare size={48} className="mx-auto text-green-500 mb-4" />
+                    <p className="text-white font-medium">Start a conversation with {directChatPerson.name}</p>
+                    <p className="text-gray-400 text-sm mt-2">{directChatPerson.position} at {directChatPerson.company}</p>
+                  </motion.div>
+                ) : (
+                  <AnimatePresence>
+                    {(directMessages[directChatPerson.name] || []).map((msg, index) => (
+                      <motion.div
+                        key={msg.id}
+                        initial={{ opacity: 0, x: msg.isMine ? 100 : -100, scale: 0.5 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        transition={{ type: 'spring', delay: index * 0.05 }}
+                        className={`flex ${msg.isMine ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div className={`max-w-[70%] ${msg.isMine ? 'order-2' : 'order-1'}`}>
+                          <motion.div
+                            className={`p-3 rounded-2xl ${msg.isMine
+                              ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white'
+                              : 'bg-white/20 text-white'
+                              }`}
+                            whileHover={{ scale: 1.02 }}
+                          >
+                            <p className="text-sm">{msg.text}</p>
+                            <p className={`text-xs mt-1 ${msg.isMine ? 'text-blue-100' : 'text-gray-400'}`}>
+                              {msg.time}
+                            </p>
+                          </motion.div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                )}
+              </div>
+
+              {/* Input Area */}
+              <div className="flex space-x-2 relative z-10 border-t border-white/20 pt-4">
+                <motion.input
+                  type="text"
+                  value={directMessage}
+                  onChange={(e) => setDirectMessage(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSendDirectMessage()}
+                  placeholder={`Message ${directChatPerson.name}...`}
+                  className="flex-1 px-4 py-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 focus:outline-none focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400"
+                  whileFocus={{ scale: 1.02 }}
+                />
+                <motion.button
+                  onClick={handleSendDirectMessage}
+                  className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl relative overflow-hidden"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  disabled={!directMessage.trim()}
+                >
+                  <Send size={20} />
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
