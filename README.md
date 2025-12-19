@@ -1,6 +1,6 @@
 # AlumniFusion - University Alumni Association Platform
 
-A modern, full-stack platform for connecting Government Engineering College alumni worldwide.
+A modern, full-stack platform for connecting Lovely Professional University alumni worldwide.
 
 ## 🚀 Features
 
