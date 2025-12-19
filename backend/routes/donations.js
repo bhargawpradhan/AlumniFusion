@@ -118,19 +118,46 @@ router.get('/', async (req, res) => {
 // ==============================
 router.get('/stats/summary', async (req, res) => {
   try {
+    // Total donation amount
     const total = await Donation.aggregate([
       { $match: { status: 'completed' } },
       { $group: { _id: null, total: { $sum: '$amount' } } }
     ])
 
+    // Donation amounts by category
     const byCategory = await Donation.aggregate([
       { $match: { status: 'completed' } },
       { $group: { _id: '$category', total: { $sum: '$amount' } } }
     ])
 
+    // Total unique donors count
+    const totalDonors = await Donation.aggregate([
+      { $match: { status: 'completed' } },
+      { $group: { _id: '$donorEmail' } },
+      { $count: 'count' }
+    ])
+
+    // Donors count by category
+    const donorsByCategory = await Donation.aggregate([
+      { $match: { status: 'completed' } },
+      {
+        $group: {
+          _id: { category: '$category', email: '$donorEmail' }
+        }
+      },
+      {
+        $group: {
+          _id: '$_id.category',
+          donors: { $sum: 1 }
+        }
+      }
+    ])
+
     res.json({
       total: total[0]?.total || 0,
+      totalDonors: totalDonors[0]?.count || 0,
       byCategory,
+      donorsByCategory
     })
   } catch (error) {
     res.status(500).json({ message: error.message })

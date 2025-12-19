@@ -403,13 +403,15 @@ const DonationPortal = () => {
     try {
       const { data } = await api.get('/donations/stats/summary')
       // data.byCategory is array of { _id: 'tech', total: 1000 }
+      // data.donorsByCategory is array of { _id: 'tech', donors: 5 }
 
       setCategories(prev => prev.map(cat => {
-        const found = data.byCategory?.find(c => c._id === cat.id)
+        const foundAmount = data.byCategory?.find(c => c._id === cat.id)
+        const foundDonors = data.donorsByCategory?.find(c => c._id === cat.id)
         return {
           ...cat,
-          current: found ? found.total : cat.current,
-          donors: cat.donors // Donors count might be separate if needed, keeping mock or 0 for now as stats only give amount
+          current: foundAmount ? foundAmount.total : cat.current,
+          donors: foundDonors ? foundDonors.donors : 0
         }
       }))
     } catch (error) {
@@ -454,51 +456,51 @@ const DonationPortal = () => {
       setIsProcessing(false)
     }
   }
-//   const handleDonate = async () => {
-//   if (!donationData.amount || parseFloat(donationData.amount) <= 0) {
-//     toast.error('Please enter a valid donation amount')
-//     return
-//   }
-//   if (!donationData.name.trim()) {
-//     toast.error('Please enter your name')
-//     return
-//   }
-//   if (!donationData.email.trim()) {
-//     toast.error('Please enter your email')
-//     return
-//   }
+  //   const handleDonate = async () => {
+  //   if (!donationData.amount || parseFloat(donationData.amount) <= 0) {
+  //     toast.error('Please enter a valid donation amount')
+  //     return
+  //   }
+  //   if (!donationData.name.trim()) {
+  //     toast.error('Please enter your name')
+  //     return
+  //   }
+  //   if (!donationData.email.trim()) {
+  //     toast.error('Please enter your email')
+  //     return
+  //   }
 
-//   setIsProcessing(true)
+  //   setIsProcessing(true)
 
-//   try {
-//     // 🔗 RAZORPAY PAYMENT LINK (HERE IT IS ADDED)
-//     const razorpayLink = `https://razorpay.me/@adityasharma8526?amount=${parseFloat(
-//       donationData.amount
-//     ) * 100}` // amount in paise
+  //   try {
+  //     // 🔗 RAZORPAY PAYMENT LINK (HERE IT IS ADDED)
+  //     const razorpayLink = `https://razorpay.me/@adityasharma8526?amount=${parseFloat(
+  //       donationData.amount
+  //     ) * 100}` // amount in paise
 
-//     // 👉 Open Razorpay payment page
-//     window.open(razorpayLink, '_blank')
+  //     // 👉 Open Razorpay payment page
+  //     window.open(razorpayLink, '_blank')
 
-//     // 👉 Save donation entry (temporary success)
-//     await api.post('/donations', {
-//       amount: parseFloat(donationData.amount),
-//       category: selectedCategory.id,
-//       donorName: donationData.name,
-//       donorEmail: donationData.email,
-//       paymentMethod: 'razorpay',
-//       status: 'pending'
-//     })
+  //     // 👉 Save donation entry (temporary success)
+  //     await api.post('/donations', {
+  //       amount: parseFloat(donationData.amount),
+  //       category: selectedCategory.id,
+  //       donorName: donationData.name,
+  //       donorEmail: donationData.email,
+  //       paymentMethod: 'razorpay',
+  //       status: 'pending'
+  //     })
 
-//     await fetchStats()
+  //     await fetchStats()
 
-//     setIsProcessing(false)
-//     setShowSuccess(true)
-//   } catch (error) {
-//     console.error('Donation error:', error)
-//     toast.error('Donation failed')
-//     setIsProcessing(false)
-//   }
-// }
+  //     setIsProcessing(false)
+  //     setShowSuccess(true)
+  //   } catch (error) {
+  //     console.error('Donation error:', error)
+  //     toast.error('Donation failed')
+  //     setIsProcessing(false)
+  //   }
+  // }
 
   const resetForm = () => {
     setShowSuccess(false)
