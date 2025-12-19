@@ -41,13 +41,11 @@ app.use(express.json())
 // MongoDB Connection
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/alumnifusion', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
+    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/alumnifusion')
     console.log(`MongoDB Connected: ${conn.connection.host}`)
   } catch (error) {
     console.error(`Error: ${error.message}`)
+    console.error('Make sure MONGODB_URI is set in .env file for MongoDB Atlas connection')
     process.exit(1)
   }
 }

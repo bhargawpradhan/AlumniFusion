@@ -104,7 +104,7 @@
 //       }
 
 //       const registerResponse = await api.post('/auth/register', payload)
-      
+
 //       // Automatically log in after successful registration
 //       try {
 //         const loginResponse = await api.post('/auth/login', {
@@ -115,7 +115,7 @@
 //         // Save token and user info
 //         localStorage.setItem('token', loginResponse.data.token)
 //         localStorage.setItem('user', JSON.stringify(loginResponse.data.user || {}))
-        
+
 //         toast.success('Registration & Login successful!')
 //         navigate('/user/dashboard')
 //       } catch (loginError) {
@@ -656,21 +656,10 @@ const Register = () => {
 
       const registerResponse = await api.post('/auth/register', payload)
 
-      try {
-        const loginResponse = await api.post('/auth/login', {
-          email: formData.email,
-          password: formData.password
-        })
+      // Show success message and redirect to login page
+      toast.success('Registration successful! Please login with your credentials.')
+      navigate('/login')
 
-        localStorage.setItem('token', loginResponse.data.token)
-        localStorage.setItem('user', JSON.stringify(loginResponse.data.user || {}))
-        toast.success('Registration & Login successful!')
-        navigate('/user/dashboard')
-      } catch (loginError) {
-        console.error('Auto-login after registration failed:', loginError)
-        toast.success('Registration successful! Please login with your credentials.')
-        navigate('/login')
-      }
     } catch (error) {
       console.error('Registration Error:', error)
       const errorMsg = error.response?.data?.message || 'Registration failed. Please try again.'
@@ -713,11 +702,10 @@ const Register = () => {
               {[1, 2, 3].map((s) => (
                 <div
                   key={s}
-                  className={`h-2 flex-1 mx-1 rounded-full transition-all ${
-                    s <= step
+                  className={`h-2 flex-1 mx-1 rounded-full transition-all ${s <= step
                       ? 'bg-gradient-to-r from-sky-500 to-blue-500 shadow-lg shadow-sky-500/50'
                       : 'bg-sky-200 dark:bg-sky-900'
-                  }`}
+                    }`}
                 />
               ))}
             </div>
