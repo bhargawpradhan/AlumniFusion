@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Chat Debug Tool</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .connected { background: #d4edda; color: #155724; }
+        .disconnected { background: #f8d7da; color: #721c24; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        #messages {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            height: 300px;
+            overflow-y: auto;
+            background: #fafafa;
+        }
+        .message {
+            padding: 8px;
+            margin: 5px 0;
+            border-left: 3px solid #007bff;
+            background: white;
+        }
+        .admin { border-left-color: #ffc107; background: #fff3cd; }
+        input[type="text"] {
+            width: calc(100% - 120px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Group Chat Debug Tool</h1>
+        
+        <div id="connection-status" class="status disconnected">
+            ❌ Disconnected
+        </div>
+
+        <div>
+            <h3>1. Connect to Server</h3>
+            <button onclick="connectSocket()">Connect Socket.io</button>
+            <button onclick="disconnectSocket()">Disconnect</button>
+        </div>
+
+        <div>
+            <h3>2. User Login</h3>
+            <input type="text" id="userId" placeholder="Enter User ID (from MongoDB)" />
+            <button onclick="joinUser()">Join as User</button>
+        </div>
+
+        <div>
+            <h3>3. Send Group Message</h3>
+            <select id="groupSelect">
+                <option value="general">💬 General</option>
+                <option value="jobs">💼 Jobs</option>
+                <option value="tech">💻 Tech</option>
+                <option value="alumni">🎓 Alumni</option>
+            </select>
+            <input type="text" id="messageText" placeholder="Type message..." />
+            <button onclick="sendGroupMessage()">Send</button>
+        </div>
+
+        <div>
+            <h3>4. Messages Received</h3>
+            <div id="messages"></div>
+        </div>
+
+        <div>
+            <h3>Debug Log</h3>
+            <div id="debug-log" style="background: #000; color: #0f0; padding: 10px; height: 200px; overflow-y: auto; font-family: monospace;"></div>
+        </div>
+    </div>
+
+    <script>
+        let socket = null;
+        let currentUserId = null;
+
+        function log(message, color = '#0f0') {
+            const logDiv = document.getElementById('debug-log');
+            const time = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `<div style="color: ${color}">[${time}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function updateStatus(connected) {
+            const status = document.getElementById('connection-status');
+            if (connected) {
+                status.className = 'status connected';
+                status.textContent = '✅ Connected to Socket.io';
+            } else {
+                status.className = 'status disconnected';
+                status.textContent = '❌ Disconnected';
+            }
+        }
+
+        function connectSocket() {
+            if (socket) {
+                log('Socket already exists, disconnecting old one...', '#ff0');
+                socket.disconnect();
+            }
+
+            const url = 'http://localhost:5000';
+            log(`Connecting to ${url}...`, '#00f');
+            
+            socket = io(url, {
+                transports: ['websocket', 'polling']
+            });
+
+            socket.on('connect', () => {
+                log('✅ Socket connected! ID: ' + socket.id, '#0f0');
+                updateStatus(true);
+            });
+
+            socket.on('disconnect', () => {
+                log('❌ Socket disconnected', '#f00');
+                updateStatus(false);
+            });
+
+            socket.on('connect_error', (error) => {
+                log('❌ Connection error: ' + error.message, '#f00');
+            });
+
+            socket.on('receiveGroupMessage', (msg) => {
+                log(`📨 Received group message: ${JSON.stringify(msg)}`, '#ff0');
+                displayMessage(msg);
+            });
+
+            socket.on('onlineUsers', (users) => {
+                log(`👥 Online users updated: ${users.length} users`, '#0ff');
+            });
+        }
+
+        function disconnectSocket() {
+            if (socket) {
+                socket.disconnect();
+                socket = null;
+                log('Disconnected manually', '#f00');
+            }
+        }
+
+        function joinUser() {
+            const userId = document.getElementById('userId').value.trim();
+            if (!userId) {
+                alert('Please enter a User ID');
+                return;
+            }
+            if (!socket || !socket.connected) {
+                alert('Please connect socket first!');
+                return;
+            }
+
+            currentUserId = userId;
+            socket.emit('join', userId);
+            log(`🔑 Emitted join event with userId: ${userId}`, '#0ff');
+        }
+
+        function sendGroupMessage() {
+            if (!socket || !socket.connected) {
+                alert('Please connect socket first!');
+                return;
+            }
+            if (!currentUserId) {
+                alert('Please join as a user first!');
+                return;
+            }
+
+            const groupId = document.getElementById('groupSelect').value;
+            const text = document.getElementById('messageText').value.trim();
+
+            if (!text) {
+                alert('Please enter a message');
+                return;
+            }
+
+            const messageData = {
+                groupId: groupId,
+                userId: currentUserId,
+                text: text,
+                user: {
+                    firstName: 'Debug',
+                    lastName: 'User',
+                    role: 'user'
+                }
+            };
+
+            log(`📤 Sending group message to ${groupId}: "${text}"`, '#ff0');
+            socket.emit('sendGroupMessage', messageData);
+            
+            document.getElementById('messageText').value = '';
+        }
+
+        function displayMessage(msg) {
+            const messagesDiv = document.getElementById('messages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = msg.isAdminReply ? 'message admin' : 'message';
+            msgDiv.innerHTML = `
+                <strong>${msg.user.firstName} ${msg.user.lastName}</strong>
+                ${msg.isAdminReply ? '👑' : ''}
+                <br>
+                ${msg.text}
+                <br>
+                <small>${msg.groupId} - ${msg.time}</small>
+            `;
+            messagesDiv.appendChild(msgDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        log('Debug tool loaded. Click "Connect Socket.io" to start.', '#0ff');
+    </script>
+</body>
+</html>

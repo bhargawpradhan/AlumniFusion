@@ -1,5 +1,6 @@
 import express from 'express'
 import Story from '../models/Story.js'
+import auth from '../middleware/auth.js'
 
 const router = express.Router()
 
@@ -13,9 +14,12 @@ router.get('/', async (req, res) => {
   }
 })
 
-// Get pending stories (Admin)
-router.get('/pending', async (req, res) => {
+// Get pending stories (Admin Only)
+router.get('/pending', auth, async (req, res) => {
   try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' })
+    }
     const stories = await Story.find({ status: 'pending' }).sort({ createdAt: -1 })
     res.json(stories)
   } catch (error) {
@@ -69,9 +73,12 @@ router.put('/:id', async (req, res) => {
   }
 })
 
-// Update generic status (Admin - Approve/Reject)
-router.put('/:id/status', async (req, res) => {
+// Update story status (Admin Only - Approve/Reject)
+router.put('/:id/status', auth, async (req, res) => {
   try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' })
+    }
     const { status } = req.body
     const story = await Story.findByIdAndUpdate(
       req.params.id,

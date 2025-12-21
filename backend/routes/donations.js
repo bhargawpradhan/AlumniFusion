@@ -52,11 +52,12 @@
 
 import express from 'express'
 import Donation from '../models/Donation.js'
+import auth from '../middleware/auth.js'
 
 const router = express.Router()
 
 // ==============================
-// CREATE A DONATION (FIX)
+// CREATE A DONATION
 // ==============================
 router.post('/', async (req, res) => {
   try {
@@ -102,10 +103,13 @@ router.post('/', async (req, res) => {
 })
 
 // ==============================
-// GET ALL DONATIONS
+// GET ALL DONATIONS (Admin Only)
 // ==============================
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
   try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' })
+    }
     const donations = await Donation.find().sort({ createdAt: -1 })
     res.json(donations)
   } catch (error) {
@@ -114,10 +118,13 @@ router.get('/', async (req, res) => {
 })
 
 // ==============================
-// DONATION STATS SUMMARY
+// DONATION STATS SUMMARY (Admin Only)
 // ==============================
-router.get('/stats/summary', async (req, res) => {
+router.get('/stats/summary', auth, async (req, res) => {
   try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' })
+    }
     // Total donation amount
     const total = await Donation.aggregate([
       { $match: { status: 'completed' } },

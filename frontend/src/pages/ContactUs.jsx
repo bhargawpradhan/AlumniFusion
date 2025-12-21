@@ -6,6 +6,7 @@ import successAnimation from '../animations/success.json'
 import GlassCard from '../components/GlassCard'
 import SectionHeader from '../components/SectionHeader'
 import AnimatedButton from '../components/AnimatedButton'
+import api from '../utils/api'
 import toast from 'react-hot-toast'
 
 const ContactUs = () => {
@@ -50,14 +51,29 @@ const ContactUs = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    toast.success('Message sent successfully!')
-    setSubmitted(true)
-    setTimeout(() => {
-      setFormData({ name: '', email: '', subject: '', message: '' })
-      setSubmitted(false)
-    }, 3000)
+    try {
+      const userStr = localStorage.getItem('user')
+      let userId = null
+      if (userStr) {
+        userId = JSON.parse(userStr).id
+      }
+
+      await api.post('/contact', {
+        ...formData,
+        userId
+      })
+
+      toast.success('Message sent successfully!')
+      setSubmitted(true)
+      setTimeout(() => {
+        setFormData({ name: '', email: '', subject: '', message: '' })
+        setSubmitted(false)
+      }, 3000)
+    } catch (error) {
+      toast.error('Failed to send message')
+    }
   }
 
   return (

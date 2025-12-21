@@ -17,6 +17,14 @@ const userSchema = new mongoose.Schema({
   achievements: [String],
   skills: [String],
   profilePhoto: { type: String },
+  connections: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  connectionRequests: [{
+    from: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    status: { type: String, enum: ['pending', 'accepted', 'rejected'], default: 'pending' },
+    createdAt: { type: Date, default: Date.now }
+  }],
+  isOnline: { type: Boolean, default: false },
+  lastSeen: { type: Date },
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
   isActive: { type: Boolean, default: true },
   isVerified: { type: Boolean, default: false },

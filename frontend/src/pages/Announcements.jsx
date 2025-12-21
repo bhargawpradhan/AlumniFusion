@@ -4,6 +4,7 @@ import { Megaphone, Calendar, Bell, Info, GraduationCap, Loader2, AlertCircle } 
 import GlassCard from '../components/GlassCard'
 import SectionHeader from '../components/SectionHeader'
 import api from '../utils/api'
+import { cardContinuousAnimation, cardHoverAnimation } from '../animations/cardAnimations'
 
 const Announcements = () => {
     const [announcements, setAnnouncements] = useState([])
@@ -149,7 +150,10 @@ const Announcements = () => {
                                     whileHover={{ y: -5 }}
                                     className="group"
                                 >
-                                    <GlassCard className="overflow-hidden border-t-4 border-t-sky-500 transition-all duration-300 hover:shadow-2xl">
+                                    <GlassCard
+                                        className="overflow-hidden border-t-4 border-t-sky-500 transition-all duration-300 hover:shadow-2xl"
+                                        {...cardContinuousAnimation}
+                                    >
                                         <div className="p-6">
                                             <div className="flex justify-between items-start mb-6">
                                                 <div className="flex items-center space-x-4">

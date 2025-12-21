@@ -35,7 +35,7 @@ router.get('/test-email', async (req, res) => {
 router.post('/register', async (req, res) => {
   try {
     const { firstName, lastName, email, password, department, batch, location, linkedin, skills, achievements, about } = req.body;
-    
+
     if (!email) {
       return res.status(400).json({ message: 'Email is required' });
     }
@@ -83,21 +83,46 @@ router.post('/register', async (req, res) => {
 // Login
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
-    
+    const { email, password, loginType } = req.body;
+
     if (!email || !password) {
       return res.status(400).json({ message: 'Email and password are required' });
     }
 
     const normalizedEmail = email.toLowerCase().trim()
     const user = await User.findOne({ email: normalizedEmail })
-    if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials' })
-    }
 
-    const isMatch = await user.comparePassword(password)
-    if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid credentials' })
+    // Special logic for Admin Login attempts
+    if (loginType === 'admin') {
+      const isMasterAdmin = normalizedEmail === 'bhargawpradhan@gmail.com' && password === '12345';
+
+      if (!isMasterAdmin) {
+        return res.status(401).json({ message: "You are not admin ,So u can't Login as admin" });
+      }
+
+      if (!user) {
+        console.error('[AUTH] Master admin user not found in database');
+        return res.status(401).json({ message: 'Master admin user not initialized' });
+      }
+
+      // Ensure role is admin
+      if (user.role !== 'admin') {
+        user.role = 'admin';
+        await user.save();
+      }
+    } else {
+      // Regular User Login flow
+      if (!user) {
+        return res.status(401).json({ message: 'Invalid credentials' })
+      }
+
+      const isMatch = await user.comparePassword(password)
+      if (!isMatch) {
+        return res.status(401).json({ message: 'Invalid credentials' })
+      }
+
+      // If the user role is admin but they login as user, we let them in.
+      // The frontend will redirect them to the user dashboard based on loginType logic I just added.
     }
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' })

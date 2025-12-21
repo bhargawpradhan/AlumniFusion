@@ -1,11 +1,15 @@
 import express from 'express'
 import User from '../models/User.js'
+import auth from '../middleware/auth.js'
 
 const router = express.Router()
 
-// Get all users
-router.get('/', async (req, res) => {
+// Get all users (Admin Only)
+router.get('/', auth, async (req, res) => {
   try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' })
+    }
     const users = await User.find().select('-password')
     res.json(users)
   } catch (error) {
@@ -13,8 +17,8 @@ router.get('/', async (req, res) => {
   }
 })
 
-// Get user by ID
-router.get('/:id', async (req, res) => {
+// Get user by ID (Auth Required)
+router.get('/:id', auth, async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select('-password')
     if (!user) {
@@ -26,9 +30,12 @@ router.get('/:id', async (req, res) => {
   }
 })
 
-// Create new user (Admin/Add Alumni)
-router.post('/', async (req, res) => {
+// Create new user (Admin Only)
+router.post('/', auth, async (req, res) => {
   try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' })
+    }
     const { firstName, lastName, email, password, role } = req.body
 
     // Check if user already exists
@@ -42,26 +49,26 @@ router.post('/', async (req, res) => {
       firstName,
       lastName,
       email,
-      password: password || 'password123', // Default password if not provided (for admin add)
+      password: password || 'password123',
       role: role || 'user',
       ...req.body
     })
 
     const savedUser = await user.save()
-
-    // Return user without password
     const userResponse = savedUser.toObject()
     delete userResponse.password
-
     res.status(201).json(userResponse)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
 })
 
-// Update user status (Block/Approve)
-router.put('/:id/status', async (req, res) => {
+// Update user status (Admin Only)
+router.put('/:id/status', auth, async (req, res) => {
   try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' })
+    }
     const { isActive, isVerified } = req.body
     const updateData = {}
     if (isActive !== undefined) updateData.isActive = isActive
@@ -76,14 +83,18 @@ router.put('/:id/status', async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' })
     }
-
     res.json(user)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
 })
-router.put('/:id', async (req, res) => {
+
+// Update user details (Admin Only)
+router.put('/:id', auth, async (req, res) => {
   try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' })
+    }
     const user = await User.findByIdAndUpdate(
       req.params.id,
       req.body,
@@ -93,16 +104,18 @@ router.put('/:id', async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' })
     }
-
     res.json(user)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
 })
 
-// Delete user
-router.delete('/:id', async (req, res) => {
+// Delete user (Admin Only)
+router.delete('/:id', auth, async (req, res) => {
   try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' })
+    }
     const user = await User.findByIdAndDelete(req.params.id)
     if (!user) {
       return res.status(404).json({ message: 'User not found' })

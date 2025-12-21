@@ -4,11 +4,16 @@ import { Search, Filter, X, MapPin, Briefcase, GraduationCap, Linkedin, Mail, Ex
 import api from '../utils/api'
 import toast from 'react-hot-toast'
 import AnimatedButton from '../components/AnimatedButton'
+import { cardContinuousAnimation, cardHoverAnimation } from '../animations/cardAnimations'
 
-const GlassCard = ({ children, className = '', onClick }) => (
-  <div onClick={onClick} className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 ${className}`}>
+const GlassCard = ({ children, className = '', onClick, ...props }) => (
+  <motion.div
+    onClick={onClick}
+    className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 ${className}`}
+    {...props}
+  >
     {children}
-  </div>
+  </motion.div>
 )
 
 const SectionHeader = ({ title, subtitle }) => (
@@ -420,10 +425,11 @@ const AlumniDirectory = () => {
               <GlassCard
                 className="cursor-pointer relative overflow-hidden"
                 onClick={() => setSelectedProfile(alumni)}
+                {...cardContinuousAnimation}
               >
                 {/* Animated gradient background */}
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-sky-500/10 via-blue-500/10 to-sky-500/10 opacity-0 group-hover:opacity-100"
+                  className="absolute inset-0 bg-gradient-to-r from-sky-500/10 via-blue-500/10 to-sky-500/10 opacity-0 group-hover:opacity-100 pointer-events-none"
                   animate={{
                     x: ['-100%', '100%'],
                   }}

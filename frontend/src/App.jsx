@@ -35,6 +35,7 @@ import AdminEventManager from './admin/AdminEventManager'
 import AdminContentManager from './admin/AdminContentManager'
 import AdminJobManager from './admin/AdminJobManager'
 import AdminAnnouncementManager from './admin/AdminAnnouncementManager'
+import AdminMessageManager from './admin/AdminMessageManager'
 
 import ErrorBoundary from './components/ErrorBoundary'
 
@@ -74,6 +75,7 @@ function AppContent() {
           <Route path="jobs" element={<AdminJobManager />} />
           <Route path="content" element={<AdminContentManager />} />
           <Route path="announcements" element={<AdminAnnouncementManager />} />
+          <Route path="messages" element={<AdminMessageManager />} />
         </Route>
       </Routes>
       <Toaster position="top-right" />

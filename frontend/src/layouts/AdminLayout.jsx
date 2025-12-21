@@ -1,5 +1,5 @@
-import { Outlet } from 'react-router-dom'
-import { useEffect } from 'react'
+import { Outlet, Navigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import AdminSidebar from '../components/AdminSidebar'
 import { useTheme } from '../utils/ThemeContext'
@@ -7,14 +7,34 @@ import ErrorBoundary from '../components/ErrorBoundary'
 
 const AdminLayout = () => {
   const { theme } = useTheme()
+  const [isAdmin, setIsAdmin] = useState(() => {
+    const userStr = localStorage.getItem('user')
+    const user = userStr ? JSON.parse(userStr) : null
+    return user?.role === 'admin'
+  })
+  const [checking, setChecking] = useState(false)
 
   useEffect(() => {
+    // Session validation/sync
+    const userStr = localStorage.getItem('user')
+    const user = userStr ? JSON.parse(userStr) : null
+
+    if (!user || user.role !== 'admin') {
+      setIsAdmin(false)
+    } else {
+      setIsAdmin(true)
+    }
+
     if (theme === 'dark') {
       document.documentElement.classList.add('dark')
     } else {
       document.documentElement.classList.remove('dark')
     }
   }, [theme])
+
+  if (!checking && !isAdmin) {
+    return <Navigate to="/login" replace />
+  }
 
   return (
     <ErrorBoundary>

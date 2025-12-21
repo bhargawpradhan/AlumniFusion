@@ -6,6 +6,7 @@ import GlassCard from '../components/GlassCard'
 import SectionHeader from '../components/SectionHeader'
 import AnimatedButton from '../components/AnimatedButton'
 import toast from 'react-hot-toast'
+import { cardContinuousAnimation, cardHoverAnimation } from '../animations/cardAnimations'
 
 const EventsReunions = () => {
   const [selectedEvent, setSelectedEvent] = useState(null)
@@ -165,8 +166,11 @@ const EventsReunions = () => {
                       transition={{ delay: index * 0.1, type: 'spring', stiffness: 100, damping: 15 }}
                       whileHover={{ scale: 1.08, y: -15, rotateY: 5, transition: { duration: 0.3 } }}
                     >
-                      <GlassCard className="h-full relative overflow-hidden group">
-                        <motion.div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100" />
+                      <GlassCard
+                        className="h-full relative overflow-hidden group"
+                        {...cardContinuousAnimation}
+                      >
+                        <motion.div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 pointer-events-none" />
                         {event.banner && (
                           <img src={event.banner} alt={event.title} className="w-full h-48 object-cover rounded-lg mb-4" />
                         )}
@@ -212,7 +216,11 @@ const EventsReunions = () => {
                       transition={{ delay: index * 0.05 }}
                       whileHover={{ scale: 1.05, y: -5 }}
                     >
-                      <GlassCard className="cursor-pointer relative overflow-hidden group" onClick={() => setSelectedEvent(event)}>
+                      <GlassCard
+                        className="cursor-pointer relative overflow-hidden group"
+                        onClick={() => setSelectedEvent(event)}
+                        {...cardContinuousAnimation}
+                      >
                         {event.banner && (
                           <img src={event.banner} alt={event.title} className="w-full h-32 object-cover rounded-lg mb-2" />
                         )}

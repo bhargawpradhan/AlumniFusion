@@ -1,5 +1,6 @@
 import express from 'express'
 import Event from '../models/Event.js'
+import auth from '../middleware/auth.js'
 
 const router = express.Router()
 
@@ -15,9 +16,12 @@ router.get('/', async (req, res) => {
   }
 })
 
-// Get pending events (Admin)
-router.get('/pending', async (req, res) => {
+// Get pending events (Admin Only)
+router.get('/pending', auth, async (req, res) => {
   try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' })
+    }
     const events = await Event.find({ approvalStatus: 'pending' })
       .populate('createdBy', 'firstName lastName')
       .sort({ createdAt: -1 })
@@ -27,9 +31,12 @@ router.get('/pending', async (req, res) => {
   }
 })
 
-// Get all events (Admin)
-router.get('/all', async (req, res) => {
+// Get all events (Admin Only)
+router.get('/all', auth, async (req, res) => {
   try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' })
+    }
     const events = await Event.find()
       .populate('createdBy', 'firstName lastName')
       .sort({ date: -1 })
@@ -63,9 +70,12 @@ router.post('/', async (req, res) => {
   }
 })
 
-// Update event status (Approve/Reject)
-router.put('/:id/status', async (req, res) => {
+// Update event status (Approve/Reject) (Admin Only)
+router.put('/:id/status', auth, async (req, res) => {
   try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' })
+    }
     const { status } = req.body
     const event = await Event.findByIdAndUpdate(
       req.params.id,
@@ -100,9 +110,12 @@ router.put('/:id', async (req, res) => {
   }
 })
 
-// Delete event
-router.delete('/:id', async (req, res) => {
+// Delete event (Admin Only)
+router.delete('/:id', auth, async (req, res) => {
   try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' })
+    }
     const event = await Event.findByIdAndDelete(req.params.id)
     if (!event) {
       return res.status(404).json({ message: 'Event not found' })

@@ -5,6 +5,7 @@ import api from '../utils/api'
 import GlassCard from '../components/GlassCard'
 import SectionHeader from '../components/SectionHeader'
 import toast from 'react-hot-toast'
+import { cardContinuousAnimation, cardHoverAnimation } from '../animations/cardAnimations'
 
 const SuccessStories = () => {
   const [expandedStories, setExpandedStories] = useState({})
@@ -221,10 +222,13 @@ const SuccessStories = () => {
                 }}
                 whileHover={{ scale: 1.08, y: -10, transition: { duration: 0.3 } }}
               >
-                <GlassCard className="overflow-hidden relative group">
+                <GlassCard
+                  className="overflow-hidden relative group"
+                  {...cardContinuousAnimation}
+                >
                   {/* Animated gradient background */}
                   <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100"
+                    className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 pointer-events-none"
                     animate={{
                       x: ['-100%', '100%'],
                     }}

@@ -17,38 +17,54 @@ const Dashboard = () => {
     { icon: MessageSquare, label: 'Messages', path: '/networking', color: 'from-teal-500 to-cyan-500' },
   ]
 
-  const stats = [
-    { label: 'Connections', value: '247', icon: Users, change: '+12%' },
-    { label: 'Jobs Applied', value: '8', icon: Briefcase, change: '+2' },
-    { label: 'Donations', value: '₹25,000', icon: Heart, change: '+₹5,000' },
-    { label: 'Events Attended', value: '15', icon: Calendar, change: '+3' },
-  ]
+  // Stats will be defined after userStats state is set
 
   const [activities, setActivities] = useState([])
   const [upcomingEvents, setUpcomingEvents] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [userStats, setUserStats] = useState({
+    connections: 0,
+    jobsApplied: 0,
+    donations: 0,
+    eventsAttended: 0
+  })
 
   useEffect(() => {
     fetchDashboardData()
+    fetchUserStats()
   }, [])
 
   const fetchDashboardData = async () => {
     try {
-      // Fetch approved stories for activity feed
-      const storiesRes = await api.get('/stories')
-      const recentStories = storiesRes.data.map(story => ({
-        id: story._id,
-        type: 'story',
-        text: `Success Story: ${story.name} - ${story.position} at ${story.company}`,
-        time: new Date(story.createdAt).toLocaleDateString()
-      }))
+      // Initialize with empty arrays in case of errors
+      let recentStories = [];
+      let events = [];
 
-      // Fetch upcoming events
-      const eventsRes = await api.get('/events')
-      const events = eventsRes.data.filter(e => new Date(e.date) >= new Date())
-      setUpcomingEvents(events.slice(0, 3)) // Take top 3 upcoming events
+      try {
+        // Fetch approved stories for activity feed
+        const storiesRes = await api.get('/stories')
+        recentStories = (storiesRes.data || []).map(story => ({
+          id: story._id,
+          type: 'story',
+          text: `Success Story: ${story.name} - ${story.position} at ${story.company}`,
+          time: new Date(story.createdAt).toLocaleDateString()
+        }))
+      } catch (error) {
+        console.error('Error fetching stories:', error)
+        // Continue with empty array if stories fail
+      }
 
-      // Add events to activity feed as well
+      try {
+        // Fetch upcoming events
+        const eventsRes = await api.get('/events')
+        events = (eventsRes.data || []).filter(e => new Date(e.date) >= new Date())
+        setUpcomingEvents(events.slice(0, 3))
+      } catch (error) {
+        console.error('Error fetching events:', error)
+        setUpcomingEvents([])
+      }
+
+      // Add events to activity feed
       const recentEvents = events.slice(0, 3).map(event => ({
         id: event._id,
         type: 'event',
@@ -56,13 +72,60 @@ const Dashboard = () => {
         time: new Date(event.createdAt).toLocaleDateString()
       }))
 
-      setActivities([...recentStories, ...recentEvents].sort((a, b) => new Date(b.time) - new Date(a.time)).slice(0, 5))
+      // Combine and sort activities
+      const allActivities = [...recentStories, ...recentEvents]
+        .sort((a, b) => new Date(b.time) - new Date(a.time))
+        .slice(0, 5);
+
+      setActivities(allActivities)
 
     } catch (error) {
-      console.error('Failed to fetch dashboard data', error)
-      toast.error('Failed to load dashboard updates')
+      console.error('Failed to fetch dashboard activity data', error)
+      if (error.response && error.response.status === 401) {
+        // Token might be invalid
+        console.warn('Authentication failed during dashboard fetch')
+      } else {
+        toast.error('Some dashboard features may not be available')
+      }
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const fetchUserStats = async () => {
+    try {
+      console.log('[Dashboard] Fetching user stats...')
+      const response = await api.get('/dashboard')
+      console.log('[Dashboard] Stats received:', response.data)
+
+      const data = response.data || {}
+
+      setUserStats({
+        connections: typeof data.connections === 'number' ? data.connections : 0,
+        jobsApplied: typeof data.jobsApplied === 'number' ? data.jobsApplied : 0,
+        donations: typeof data.donations === 'number' ? data.donations : 0,
+        eventsAttended: typeof data.eventsAttended === 'number' ? data.eventsAttended : 0
+      })
+    } catch (error) {
+      console.error('[Dashboard] Error fetching user stats:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      })
+
+      // Keep existing stats or set to zero if this is initial load
+      if (isLoading) {
+        setUserStats({
+          connections: 0,
+          jobsApplied: 0,
+          donations: 0,
+          eventsAttended: 0
+        })
+      }
+
+      // Only show toast for actual errors, not just cancelled requests or minor network blips if we want to be less annoying
+      // But keeping it for visibility as requested
+      toast.error('Could not load dashboard stats')
     }
   }
 
@@ -70,6 +133,38 @@ const Dashboard = () => {
     setActivities(activities.filter(n => n.id !== id))
     toast.success('Notification dismissed')
   }
+
+  // Define stats with proper fallbacks
+  const stats = [
+    {
+      label: 'Connections',
+      value: userStats.connections?.toLocaleString() || '0',
+      icon: Users,
+      change: '+0',
+      color: 'from-blue-500 to-cyan-500'
+    },
+    {
+      label: 'Jobs Applied',
+      value: userStats.jobsApplied?.toLocaleString() || '0',
+      icon: Briefcase,
+      change: '+0',
+      color: 'from-green-500 to-emerald-500'
+    },
+    {
+      label: 'Donations',
+      value: `₹${(userStats.donations || 0).toLocaleString('en-IN')}`,
+      icon: Heart,
+      change: '+₹0',
+      color: 'from-pink-500 to-rose-500'
+    },
+    {
+      label: 'Events Attended',
+      value: userStats.eventsAttended?.toLocaleString() || '0',
+      icon: Calendar,
+      change: '+0',
+      color: 'from-orange-500 to-amber-500'
+    },
+  ]
 
   return (
     <div className="space-y-8">
@@ -107,7 +202,7 @@ const Dashboard = () => {
                       {stat.change}
                     </p>
                   </div>
-                  <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${stat.icon === Users ? 'from-blue-500 to-cyan-500' : stat.icon === Briefcase ? 'from-green-500 to-emerald-500' : stat.icon === Heart ? 'from-pink-500 to-rose-500' : 'from-orange-500 to-amber-500'} flex items-center justify-center`}>
+                  <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${stat.color} flex items-center justify-center`}>
                     <Icon className="text-white" size={24} />
                   </div>
                 </div>

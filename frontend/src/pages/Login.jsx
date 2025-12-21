@@ -18,15 +18,10 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (formData.email === 'admin' && formData.password === 'admin') {
-      toast.success('Admin login successful!')
-      navigate('/admin/dashboard')
-      return
-    }
     // Real backend login
     setIsLoading(true)
     try {
-      const { data } = await api.post('/auth/login', formData)
+      const { data } = await api.post('/auth/login', { ...formData, loginType })
 
       // Save token and user info
       localStorage.setItem('token', data.token)
@@ -34,8 +29,9 @@ const Login = () => {
 
       toast.success('Login successful!')
 
-      // Redirect based on role or login type
-      if (data.user?.role === 'admin' || loginType === 'admin') {
+      // Redirect strictly based on the role and loginType context
+      // If backend says they are admin and they logged in as admin, go to admin dashboard
+      if (data.user?.role === 'admin' && loginType === 'admin') {
         navigate('/admin/dashboard')
       } else {
         navigate('/user/dashboard')
@@ -227,18 +223,28 @@ const Login = () => {
                 className="flex items-center justify-center mb-6"
                 animate={{
                   rotate: [0, 360],
+                  scale: [1, 1.1, 1],
                 }}
                 transition={{
-                  duration: 20,
-                  repeat: Infinity,
-                  ease: 'linear',
+                  rotate: { duration: 20, repeat: Infinity, ease: 'linear' },
+                  scale: { duration: 4, repeat: Infinity, ease: 'easeInOut' }
                 }}
               >
-                <GraduationCap className="w-12 h-12 text-gradient" />
+                <div className="relative group">
+                  <motion.div
+                    className="absolute -inset-2 bg-sky-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"
+                    animate={{
+                      opacity: [0.2, 0.5, 0.2],
+                      scale: [1, 1.2, 1]
+                    }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                  />
+                  <GraduationCap className="w-16 h-16 text-sky-500 relative drop-shadow-[0_0_15px_rgba(14,165,233,0.6)]" />
+                </div>
               </motion.div>
 
               <motion.h2
-                className="text-3xl font-bold text-center mb-2 text-gradient"
+                className="text-4xl font-black text-center mb-2 bg-clip-text text-transparent bg-gradient-to-r from-sky-400 via-blue-500 to-sky-600 tracking-tight"
                 animate={{
                   backgroundPosition: ['0%', '100%', '0%'],
                 }}
@@ -247,6 +253,7 @@ const Login = () => {
                   repeat: Infinity,
                   ease: 'linear',
                 }}
+                style={{ backgroundSize: '200% 200%' }}
               >
                 Welcome Back
               </motion.h2>

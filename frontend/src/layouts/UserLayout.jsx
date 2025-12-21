@@ -1,19 +1,31 @@
-import { Outlet } from 'react-router-dom'
-import { useEffect } from 'react'
+import { Outlet, Navigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import { useTheme } from '../utils/ThemeContext'
 import ErrorBoundary from '../components/ErrorBoundary'
 
 const UserLayout = () => {
   const { theme } = useTheme()
+  const [isLogged, setIsLogged] = useState(true)
+  const [checking, setChecking] = useState(true)
 
   useEffect(() => {
+    const user = localStorage.getItem('user')
+    if (!user) {
+      setIsLogged(false)
+    }
+    setChecking(false)
+
     if (theme === 'dark') {
       document.documentElement.classList.add('dark')
     } else {
       document.documentElement.classList.remove('dark')
     }
   }, [theme])
+
+  if (!checking && !isLogged) {
+    return <Navigate to="/login" replace />
+  }
 
   return (
     <ErrorBoundary>

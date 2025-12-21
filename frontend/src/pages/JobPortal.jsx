@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Briefcase, MapPin, DollarSign, Clock, Search, Plus, X, Upload, CheckCircle, Sparkles, Star, Zap, TrendingUp, Loader2 } from 'lucide-react'
 import api from '../utils/api'
 import toast from 'react-hot-toast'
+import { cardContinuousAnimation, cardHoverAnimation } from '../animations/cardAnimations'
 
 const JobPortal = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -75,11 +76,24 @@ const JobPortal = () => {
       const userStr = localStorage.getItem('user')
       if (userStr) {
         const user = JSON.parse(userStr)
-        await api.post(`/jobs/${selectedJob.id}/apply`, { userId: user.id })
+        const formData = new FormData()
+        formData.append('userId', user.id)
+        formData.append('coverLetter', applicationData.coverLetter)
+        if (applicationData.resume) {
+          formData.append('resume', applicationData.resume)
+        }
+
+        await api.post(`/jobs/${selectedJob.id}/apply`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
 
         setShowApplyModal(false)
         setShowSuccess(true)
+        setSelectedJob(null)
         setApplicationData({ coverLetter: '', resume: null })
+        toast.success('Application submitted successfully!')
 
         setTimeout(() => {
           setShowSuccess(false)
@@ -136,7 +150,7 @@ const JobPortal = () => {
       toast.success('Job submitted for approval! An admin will review it shortly.')
       setShowAddJob(false)
       setShowJobSuccess(true)
-      setNewJob({
+      setNewJobData({
         title: '',
         company: '',
         location: '',
@@ -144,7 +158,7 @@ const JobPortal = () => {
         salary: '',
         type: 'Full-time',
         requirements: '',
-        qualifications: ''
+        skills: ''
       })
       setTimeout(() => { setShowJobSuccess(false) }, 4000)
 
@@ -515,19 +529,21 @@ const JobPortal = () => {
                 <motion.div
                   key={job.id}
                   initial={{ opacity: 0, y: 50, rotateX: -20 }}
-                  animate={{ opacity: 1, y: 0, rotateX: 0 }}
+                  animate={{
+                    opacity: [0, 1, 0.8, 1],
+                    y: 0,
+                    rotateX: 0,
+                    scale: [1, 1.05, 1],
+                  }}
                   transition={{
-                    delay: index * 0.08,
-                    type: "spring",
-                    stiffness: 100
+                    opacity: { duration: 0.8, times: [0, 0.2, 0.5, 1] },
+                    y: { duration: 0.8, type: "spring", stiffness: 100 },
+                    rotateX: { duration: 0.8 },
+                    scale: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.8 },
+                    opacity: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.8, times: [0, 0.5, 1], values: [1, 0.8, 1] }
                   }}
-                  whileHover={{
-                    scale: 1.08,
-                    y: -15,
-                    rotateY: 5,
-                    transition: { duration: 0.3 }
-                  }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={cardHoverAnimation.whileHover}
+                  whileTap={cardHoverAnimation.whileTap}
                   className="group"
                 >
                   <div
@@ -535,7 +551,7 @@ const JobPortal = () => {
                     onClick={() => setSelectedJob(job)}
                   >
                     <motion.div
-                      className="absolute -inset-0.5 bg-gradient-to-r from-sky-400 via-blue-500 to-sky-600 rounded-2xl opacity-0 group-hover:opacity-75 blur transition-opacity"
+                      className="absolute -inset-0.5 bg-gradient-to-r from-sky-400 via-blue-500 to-sky-600 rounded-2xl opacity-0 group-hover:opacity-75 blur transition-opacity pointer-events-none"
                       animate={{
                         backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
                       }}
@@ -757,7 +773,7 @@ const JobPortal = () => {
                 ))}
 
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-br from-sky-500/10 via-blue-500/10 to-sky-500/10 rounded-3xl"
+                  className="absolute inset-0 bg-gradient-to-br from-sky-500/10 via-blue-500/10 to-sky-500/10 rounded-3xl pointer-events-none"
                   animate={{
                     backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
                   }}
@@ -929,7 +945,6 @@ const JobPortal = () => {
 
                   <motion.button
                     onClick={() => {
-                      setSelectedJob(null)
                       setShowApplyModal(true)
                     }}
                     className="w-full py-5 bg-gradient-to-r from-sky-400 via-blue-500 to-sky-600 text-white rounded-3xl font-black text-xl shadow-2xl relative overflow-hidden group"
@@ -1074,7 +1089,10 @@ const JobPortal = () => {
                     transition={{ delay: 0.4 }}
                   >
                     <motion.button
-                      onClick={() => setShowApplyModal(false)}
+                      onClick={() => {
+                        setShowApplyModal(false)
+                        setSelectedJob(null)
+                      }}
                       className="flex-1 px-6 py-4 rounded-2xl border-2 border-white/30 bg-white/5 hover:bg-white/10 font-bold transition-all text-white backdrop-blur-xl"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}

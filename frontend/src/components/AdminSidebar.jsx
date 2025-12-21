@@ -10,6 +10,7 @@ import {
   GraduationCap,
   Shield,
   Megaphone,
+  MessageSquare,
 } from 'lucide-react'
 import DarkModeToggle from './DarkModeToggle'
 
@@ -23,6 +24,7 @@ const AdminSidebar = () => {
     { icon: Users, label: 'User Management', path: '/admin/users' },
     { icon: Calendar, label: 'Event Manager', path: '/admin/events' },
     { icon: Briefcase, label: 'Job Manager', path: '/admin/jobs' },
+    { icon: MessageSquare, label: 'Messages', path: '/admin/messages' },
     { icon: FileText, label: 'Content Manager', path: '/admin/content' },
   ]
 

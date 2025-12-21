@@ -13,9 +13,21 @@ const Footer = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <div className="flex items-center space-x-2 mb-4">
-              <GraduationCap className="w-8 h-8 text-gradient" />
-              <span className="text-xl font-bold text-gradient">AlumniFusion</span>
+            <div className="flex items-center space-x-2 mb-4 group cursor-pointer">
+              <div className="relative">
+                <motion.div
+                  className="absolute -inset-1 bg-gradient-to-r from-sky-400 to-blue-500 rounded-lg blur-md opacity-30 group-hover:opacity-100 transition duration-500"
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.3, 0.6, 0.3]
+                  }}
+                  transition={{ duration: 4, repeat: Infinity }}
+                />
+                <GraduationCap className="w-8 h-8 text-sky-500 relative drop-shadow-[0_0_8px_rgba(14,165,233,0.5)]" />
+              </div>
+              <span className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-blue-600 tracking-tight drop-shadow-sm">
+                AlumniFusion
+              </span>
             </div>
             <p className="text-gray-600 dark:text-gray-400 text-sm">
               Connecting Lovely Professional University alumni worldwide. Building a strong network for success.
@@ -87,8 +99,6 @@ const Footer = () => {
               <li className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 text-sm">
                 <Phone size={16} />
                 <span>+91 182 451 7000</span>
-                {/* <span>+91 182 440 4404</span> */}
-                
               </li>
               <li className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 text-sm">
                 <MapPin size={16} />
@@ -96,13 +106,20 @@ const Footer = () => {
               </li>
             </ul>
             <div className="flex space-x-4 mt-4">
-              {[Facebook, Twitter, Linkedin, Instagram].map((Icon, i) => (
+              {[
+                { Icon: Facebook, url: 'https://facebook.com/LPUUniversity' },
+                { Icon: Twitter, url: 'https://twitter.com/lpuuniversity' },
+                { Icon: Linkedin, url: 'https://linkedin.com/school/lovely-professional-university' },
+                { Icon: Instagram, url: 'https://instagram.com/lpuuniversity' }
+              ].map(({ Icon, url }, i) => (
                 <motion.a
                   key={i}
-                  href="#"
-                  whileHover={{ scale: 1.2 }}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.2, rotate: 5 }}
                   whileTap={{ scale: 0.9 }}
-                  className="w-10 h-10 rounded-full glass dark:glass-dark flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400"
+                  className="w-10 h-10 rounded-full glass dark:glass-dark flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 shadow-lg"
                 >
                   <Icon size={18} />
                 </motion.a>
