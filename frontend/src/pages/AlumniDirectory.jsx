@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Filter, X, MapPin, Briefcase, GraduationCap, Linkedin, Mail, ExternalLink, Sparkles, Star, Award, Loader2, Users } from 'lucide-react'
 import api from '../utils/api'
@@ -6,15 +6,80 @@ import toast from 'react-hot-toast'
 import AnimatedButton from '../components/AnimatedButton'
 import { cardContinuousAnimation, cardHoverAnimation } from '../animations/cardAnimations'
 
-const GlassCard = ({ children, className = '', onClick, ...props }) => (
-  <motion.div
-    onClick={onClick}
-    className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 ${className}`}
-    {...props}
-  >
-    {children}
-  </motion.div>
-)
+const GlassCard = ({ children, className = '', onClick, ...props }) => {
+  const cardRef = useRef(null);
+  const [rotateX, setRotateX] = useState(0);
+  const [rotateY, setRotateY] = useState(0);
+  const [shineOpacity, setShineOpacity] = useState(0);
+  const [shinePos, setShinePos] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // 3D tilt calculation
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rX = ((y - centerY) / centerY) * -10; // Max 10 deg tilt
+    const rY = ((x - centerX) / centerX) * 10;
+
+    setRotateX(rX);
+    setRotateY(rY);
+    setShinePos({ x, y });
+    setShineOpacity(0.5);
+  };
+
+  const handleMouseLeave = () => {
+    setRotateX(0);
+    setRotateY(0);
+    setShineOpacity(0);
+  };
+
+  return (
+    <motion.div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onClick={onClick}
+      className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 relative overflow-hidden group ${className}`}
+      style={{
+        perspective: '1000px',
+        transformStyle: 'preserve-3d',
+      }}
+      animate={{
+        rotateX,
+        rotateY,
+        scale: rotateX !== 0 ? 1.1 : 1, // Increased scale
+        boxShadow: rotateX !== 0
+          ? '0 30px 60px rgba(0, 0, 0, 0.3), 0 0 30px rgba(56, 189, 248, 0.5)'
+          : '0 10px 30px rgba(0, 0, 0, 0.1)',
+      }}
+      transition={{
+        type: 'spring',
+        stiffness: 400, // Snappier
+        damping: 15,    // More bounce
+      }}
+      {...props}
+    >
+      {/* Shiny Overlay */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `radial-gradient(circle at ${shinePos.x}px ${shinePos.y}px, rgba(255,255,255,0.4) 0%, transparent 80%)`,
+          opacity: shineOpacity,
+        }}
+      />
+      {/* Border Glow Effect */}
+      <div className="absolute inset-0 rounded-xl border border-white/0 group-hover:border-sky-500/50 transition-colors duration-300 pointer-events-none" />
+
+      <div style={{ transform: 'translateZ(20px)' }}>
+        {children}
+      </div>
+    </motion.div>
+  );
+};
 
 const SectionHeader = ({ title, subtitle }) => (
   <motion.div
@@ -295,34 +360,41 @@ const AlumniDirectory = () => {
               placeholder="Search by name, position, or company..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              className="w-full pl-10 pr-4 py-3 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all hover:bg-white/20 hover:border-sky-500/50"
             />
           </motion.div>
           <motion.button
             onClick={() => setShowFilters(!showFilters)}
-            className="px-6 py-3 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 flex items-center space-x-2 hover:bg-sky-500/20"
-            whileHover={{ scale: 1.05, rotate: [0, -2, 2, 0] }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ duration: 0.3 }}
+            className="px-6 py-3 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 flex items-center space-x-2 hover:bg-sky-500/20 hover:border-sky-500/50 hover:shadow-[0_0_25px_rgba(56,189,248,0.5)] transition-all"
+            whileHover={{ scale: 1.15, rotate: [0, -3, 3, 0] }}
+            whileTap={{ scale: 0.85 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 10 }}
           >
             <motion.div
               animate={{
                 rotate: showFilters ? 180 : 0,
               }}
             >
-              <Filter size={20} />
+              <Filter size={20} className="group-hover:text-sky-400 transition-colors" />
             </motion.div>
-            <span>Filters</span>
+            <span className="group-hover:text-sky-400 transition-colors">Filters</span>
           </motion.button>
 
           <motion.button
             onClick={() => setShowAddModal(true)}
-            className="px-6 py-3 rounded-lg bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-lg flex items-center space-x-2"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className="px-6 py-3 rounded-lg bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-lg flex items-center space-x-2 relative overflow-hidden group"
+            whileHover={{
+              scale: 1.2,
+              boxShadow: '0 0 40px rgba(56, 189, 248, 0.8)',
+            }}
+            whileTap={{ scale: 0.8 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 10 }}
           >
-            <Users size={20} />
-            <span>Add Alumni</span>
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full transition-transform duration-500 group-hover:translate-x-full"
+            />
+            <Users size={20} className="relative z-10" />
+            <span className="relative z-10">Add Alumni</span>
           </motion.button>
         </div>
 
@@ -406,13 +478,13 @@ const AlumniDirectory = () => {
           {filteredAlumni.map((alumni, index) => (
             <motion.div
               key={alumni.id}
-              initial={{ opacity: 0, y: 50, scale: 0.8 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
+              initial={{ opacity: 0, y: 50, scale: 0.5, rotate: -5 }}
+              animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
               transition={{
-                delay: index * 0.1,
+                delay: index * 0.05,
                 type: 'spring',
-                stiffness: 100,
-                damping: 15
+                stiffness: 260,
+                damping: 20
               }}
             >
               <GlassCard
@@ -442,9 +514,14 @@ const AlumniDirectory = () => {
                     className="w-16 h-16 rounded-full flex items-center justify-center overflow-hidden bg-gradient-to-r from-sky-500 to-blue-600 shadow-lg relative"
                     whileHover={{
                       rotate: 360,
-                      scale: 1.2
+                      scale: 1.4, // Massive pop
+                      zIndex: 30,
                     }}
-                    transition={{ duration: 0.6 }}
+                    transition={{
+                      type: 'spring',
+                      stiffness: 400,
+                      damping: 15
+                    }}
                     animate={{
                       boxShadow: [
                         '0 0 20px rgba(56, 189, 248, 0.5)',
@@ -539,8 +616,18 @@ const AlumniDirectory = () => {
                           className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded text-xs"
                           initial={{ opacity: 0, scale: 0 }}
                           animate={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: i * 0.1 }}
-                          whileHover={{ scale: 1.1, y: -2 }}
+                          whileHover={{
+                            scale: 1.3, // Bigger pop
+                            y: -5,
+                            backgroundColor: 'rgba(56, 189, 248, 0.2)',
+                            zIndex: 20
+                          }}
+                          transition={{
+                            delay: i * 0.1,
+                            type: 'spring',
+                            stiffness: 500,
+                            damping: 10
+                          }}
                         >
                           {skill}
                         </motion.span>
