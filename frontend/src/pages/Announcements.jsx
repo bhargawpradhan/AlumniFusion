@@ -147,7 +147,6 @@ const Announcements = () => {
                                 <motion.div
                                     key={announcement._id}
                                     variants={item}
-                                    whileHover={{ y: -5 }}
                                     className="group"
                                 >
                                     <GlassCard

@@ -512,7 +512,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate, Link } from 'react-router-dom'
-import { User, Mail, Lock, Building, Briefcase, GraduationCap, Upload, Linkedin, Award, Trophy, ArrowRight, ArrowLeft, Loader2, Camera, MapPin } from 'lucide-react'
+import { User, Mail, Lock, Building, Briefcase, GraduationCap, Upload, Linkedin, Award, Trophy, ArrowRight, ArrowLeft, Loader2, Camera, MapPin, Eye, EyeOff } from 'lucide-react'
 import api from '../utils/api'
 import AnimatedButton from '../components/AnimatedButton'
 import GlassCard from '../components/GlassCard'
@@ -521,6 +521,8 @@ import toast from 'react-hot-toast'
 const Register = () => {
   const [step, setStep] = useState(1)
   const [isAssuming, setIsAssuming] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -703,15 +705,15 @@ const Register = () => {
                 <div
                   key={s}
                   className={`h-2 flex-1 mx-1 rounded-full transition-all ${s <= step
-                      ? 'bg-gradient-to-r from-sky-500 to-blue-500 shadow-lg shadow-sky-500/50'
-                      : 'bg-sky-200 dark:bg-sky-900'
+                    ? 'bg-gradient-to-r from-sky-500 to-blue-500 shadow-lg shadow-sky-500/50'
+                    : 'bg-sky-200 dark:bg-sky-900'
                     }`}
                 />
               ))}
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6" autoComplete="off">
             <AnimatePresence mode="wait">
               {step === 1 && (
                 <motion.div
@@ -780,13 +782,20 @@ const Register = () => {
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 text-sky-400" size={20} />
                       <input
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         name="password"
                         value={formData.password}
                         onChange={handleInputChange}
-                        className="w-full pl-10 pr-4 py-3 rounded-lg bg-sky-50/50 dark:bg-sky-950/50 border border-sky-200 dark:border-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900 dark:text-white placeholder-sky-400 dark:placeholder-sky-600"
+                        className="w-full pl-10 pr-12 py-3 rounded-lg bg-sky-50/50 dark:bg-sky-950/50 border border-sky-200 dark:border-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900 dark:text-white placeholder-sky-400 dark:placeholder-sky-600"
                         placeholder="••••••••"
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-3 text-sky-400 hover:text-sky-500 transition-colors"
+                      >
+                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      </button>
                     </div>
                   </div>
 
@@ -797,13 +806,20 @@ const Register = () => {
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 text-sky-400" size={20} />
                       <input
-                        type="password"
+                        type={showConfirmPassword ? "text" : "password"}
                         name="confirmPassword"
                         value={formData.confirmPassword}
                         onChange={handleInputChange}
-                        className="w-full pl-10 pr-4 py-3 rounded-lg bg-sky-50/50 dark:bg-sky-950/50 border border-sky-200 dark:border-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900 dark:text-white placeholder-sky-400 dark:placeholder-sky-600"
+                        className="w-full pl-10 pr-12 py-3 rounded-lg bg-sky-50/50 dark:bg-sky-950/50 border border-sky-200 dark:border-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900 dark:text-white placeholder-sky-400 dark:placeholder-sky-600"
                         placeholder="••••••••"
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-3 text-sky-400 hover:text-sky-500 transition-colors"
+                      >
+                        {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      </button>
                     </div>
                   </div>
 

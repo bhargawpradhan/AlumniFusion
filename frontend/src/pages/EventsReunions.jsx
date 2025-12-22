@@ -161,10 +161,9 @@ const EventsReunions = () => {
                   {upcomingEvents.map((event, index) => (
                     <motion.div
                       key={event._id}
-                      initial={{ opacity: 0, y: 50, scale: 0.9, rotateY: -15 }}
-                      animate={{ opacity: 1, y: 0, scale: 1, rotateY: 0 }}
+                      initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
                       transition={{ delay: index * 0.1, type: 'spring', stiffness: 100, damping: 15 }}
-                      whileHover={{ scale: 1.08, y: -15, rotateY: 5, transition: { duration: 0.3 } }}
                     >
                       <GlassCard
                         className="h-full relative overflow-hidden group"
@@ -214,7 +213,6 @@ const EventsReunions = () => {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: index * 0.05 }}
-                      whileHover={{ scale: 1.05, y: -5 }}
                     >
                       <GlassCard
                         className="cursor-pointer relative overflow-hidden group"

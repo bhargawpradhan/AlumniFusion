@@ -36,7 +36,7 @@ const Sidebar = () => {
     >
       <div className="p-6">
         <div className="flex items-center space-x-2 mb-8">
-          <GraduationCap className="w-8 h-8 text-gradient" />
+          <GraduationCap className="w-8 h-8 text-sky-500" />
           <span className="text-xl font-bold text-gradient">AlumniFusion</span>
         </div>
 
@@ -48,11 +48,10 @@ const Sidebar = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
-                  isActive
+                className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${isActive
                     ? 'bg-gradient-to-r from-sky-600 to-cyan-600 text-white'
                     : 'text-gray-700 dark:text-gray-300 hover:bg-sky-100 dark:hover:bg-sky-900'
-                }`}
+                  }`}
               >
                 <Icon size={20} />
                 <span>{item.label}</span>

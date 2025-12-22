@@ -40,7 +40,7 @@ const Navbar = () => {
               <GraduationCap className="w-8 h-8 text-sky-500" />
             </motion.div>
             <motion.span
-              className="text-xl font-bold bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent"
+              className="text-xl font-bold bg-gradient-to-r from-sky-400 via-sky-500 to-sky-600 bg-clip-text text-transparent"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2, duration: 0.5 }}

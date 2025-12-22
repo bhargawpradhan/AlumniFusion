@@ -772,167 +772,152 @@ const Home = () => {
         />
         <div className="grid md:grid-cols-3 gap-8 mb-12">
           {/* Connecting People */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 30 }}
-            whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, type: 'spring', bounce: 0.4 }}
-            whileHover={{
-              y: -15,
-              rotateX: 10,
-              rotateY: -10,
-              perspective: 1000,
-              transition: { duration: 0.3 }
-            }}
-            className="relative group"
-          >
-            {/* Premium Glow Effect */}
+          <Link to="/networking" className="relative group">
             <motion.div
-              className="absolute -inset-1 bg-gradient-to-r from-sky-500 to-cyan-500 rounded-2xl blur-lg opacity-0 group-hover:opacity-50 transition-all duration-500 -z-10"
-              animate={{
-                scale: [1, 1.02, 1],
-                rotate: [0, 1, -1, 0]
-              }}
-              transition={{ duration: 4, repeat: Infinity }}
-            />
-            <GlassCard className="text-center overflow-hidden h-full border border-white/20 dark:border-white/10 shadow-xl group-hover:shadow-2xl transition-all duration-500">
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, type: 'spring', bounce: 0.4 }}
+              className="h-full"
+            >
+              {/* Premium Glow Effect */}
               <motion.div
-                className="absolute inset-0 bg-gradient-to-br from-sky-400/10 via-transparent to-blue-400/10 pointer-events-none"
+                className="absolute -inset-1 bg-gradient-to-r from-sky-500 to-cyan-500 rounded-2xl blur-lg opacity-0 group-hover:opacity-50 transition-all duration-500 -z-10"
                 animate={{
-                  backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
+                  scale: [1, 1.02, 1],
+                  rotate: [0, 1, -1, 0]
                 }}
-                transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+                transition={{ duration: 4, repeat: Infinity }}
               />
-              <div className="relative z-10 p-6 flex flex-col h-full">
-                <div className="w-32 h-32 mx-auto mb-6 relative">
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-sky-400 to-cyan-500 rounded-full blur-xl opacity-40 group-hover:opacity-70 transition-opacity"
-                    animate={{
-                      scale: [1, 1.2, 1],
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
-                  <motion.div
-                    className="absolute inset-0 flex items-center justify-center"
-                    animate={{ y: [0, -10, 0] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                  >
-                    <UserPlus className="w-16 h-16 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
-                  </motion.div>
+              <GlassCard className="text-center overflow-hidden h-full border border-white/20 dark:border-white/10 shadow-xl group-hover:shadow-2xl transition-all duration-500">
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-br from-sky-400/10 via-transparent to-blue-400/10 pointer-events-none"
+                  animate={{
+                    backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
+                  }}
+                  transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+                />
+                <div className="relative z-10 p-6 flex flex-col h-full">
+                  <div className="w-32 h-32 mx-auto mb-6 relative">
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-sky-400 to-cyan-500 rounded-full blur-xl opacity-40 group-hover:opacity-70 transition-opacity"
+                      animate={{
+                        scale: [1, 1.2, 1],
+                      }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
+                    <motion.div
+                      className="absolute inset-0 flex items-center justify-center"
+                      animate={{ y: [0, -10, 0] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <UserPlus className="w-16 h-16 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
+                    </motion.div>
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">Connect with People</h3>
+                  <p className="text-gray-600 dark:text-gray-400 flex-grow">Build meaningful professional relationships with global alumni.</p>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">Connect with People</h3>
-                <p className="text-gray-600 dark:text-gray-400 flex-grow">Build meaningful professional relationships with global alumni.</p>
-              </div>
-            </GlassCard>
-          </motion.div>
+              </GlassCard>
+            </motion.div>
+          </Link>
 
           {/* Jobs */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 30 }}
-            whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, type: 'spring', bounce: 0.4, delay: 0.2 }}
-            whileHover={{
-              y: -15,
-              rotateX: 10,
-              rotateY: 10,
-              perspective: 1000,
-              transition: { duration: 0.3 }
-            }}
-            className="relative group"
-          >
+          <Link to="/jobs" className="relative group">
             <motion.div
-              className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl blur-lg opacity-0 group-hover:opacity-50 transition-all duration-500 -z-10"
-              animate={{
-                scale: [1, 1.02, 1],
-                rotate: [0, -1, 1, 0]
-              }}
-              transition={{ duration: 4, repeat: Infinity }}
-            />
-            <GlassCard className="text-center overflow-hidden h-full border border-white/20 dark:border-white/10 shadow-xl group-hover:shadow-2xl transition-all duration-500">
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, type: 'spring', bounce: 0.4, delay: 0.2 }}
+              className="h-full"
+            >
               <motion.div
-                className="absolute inset-0 bg-gradient-to-br from-emerald-400/10 via-transparent to-teal-400/10 pointer-events-none"
+                className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl blur-lg opacity-0 group-hover:opacity-50 transition-all duration-500 -z-10"
                 animate={{
-                  backgroundPosition: ['100% 0%', '0% 100%', '100% 0%'],
+                  scale: [1, 1.02, 1],
+                  rotate: [0, -1, 1, 0]
                 }}
-                transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+                transition={{ duration: 4, repeat: Infinity }}
               />
-              <div className="relative z-10 p-6 flex flex-col h-full">
-                <div className="w-32 h-32 mx-auto mb-6 relative">
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full blur-xl opacity-40 group-hover:opacity-70 transition-opacity"
-                    animate={{
-                      scale: [1, 1.2, 1],
-                    }}
-                    transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-                  />
-                  <motion.div
-                    className="absolute inset-0 flex items-center justify-center"
-                    animate={{ y: [0, -10, 0] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
-                  >
-                    <Briefcase className="w-16 h-16 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
-                  </motion.div>
+              <GlassCard className="text-center overflow-hidden h-full border border-white/20 dark:border-white/10 shadow-xl group-hover:shadow-2xl transition-all duration-500">
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-br from-emerald-400/10 via-transparent to-teal-400/10 pointer-events-none"
+                  animate={{
+                    backgroundPosition: ['100% 0%', '0% 100%', '100% 0%'],
+                  }}
+                  transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+                />
+                <div className="relative z-10 p-6 flex flex-col h-full">
+                  <div className="w-32 h-32 mx-auto mb-6 relative">
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full blur-xl opacity-40 group-hover:opacity-70 transition-opacity"
+                      animate={{
+                        scale: [1, 1.2, 1],
+                      }}
+                      transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                    />
+                    <motion.div
+                      className="absolute inset-0 flex items-center justify-center"
+                      animate={{ y: [0, -10, 0] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
+                    >
+                      <Briefcase className="w-16 h-16 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
+                    </motion.div>
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Find Jobs</h3>
+                  <p className="text-gray-600 dark:text-gray-400 flex-grow">Discover exclusive opportunities from top companies worldwide.</p>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Find Jobs</h3>
-                <p className="text-gray-600 dark:text-gray-400 flex-grow">Discover exclusive opportunities from top companies worldwide.</p>
-              </div>
-            </GlassCard>
-          </motion.div>
+              </GlassCard>
+            </motion.div>
+          </Link>
 
           {/* Success Stories */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 30 }}
-            whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, type: 'spring', bounce: 0.4, delay: 0.4 }}
-            whileHover={{
-              y: -15,
-              rotateX: 10,
-              rotateY: 0,
-              perspective: 1000,
-              transition: { duration: 0.3 }
-            }}
-            className="relative group"
-          >
+          <Link to="/success-stories" className="relative group">
             <motion.div
-              className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl blur-lg opacity-0 group-hover:opacity-50 transition-all duration-500 -z-10"
-              animate={{
-                scale: [1, 1.02, 1],
-                rotate: [0, 1, -1, 0]
-              }}
-              transition={{ duration: 4, repeat: Infinity }}
-            />
-            <GlassCard className="text-center overflow-hidden h-full border border-white/20 dark:border-white/10 shadow-xl group-hover:shadow-2xl transition-all duration-500">
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, type: 'spring', bounce: 0.4, delay: 0.4 }}
+              className="h-full"
+            >
               <motion.div
-                className="absolute inset-0 bg-gradient-to-br from-amber-400/10 via-transparent to-orange-400/10 pointer-events-none"
+                className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl blur-lg opacity-0 group-hover:opacity-50 transition-all duration-500 -z-10"
                 animate={{
-                  backgroundPosition: ['0% 100%', '100% 0%', '0% 100%'],
+                  scale: [1, 1.02, 1],
+                  rotate: [0, 1, -1, 0]
                 }}
-                transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+                transition={{ duration: 4, repeat: Infinity }}
               />
-              <div className="relative z-10 p-6 flex flex-col h-full">
-                <div className="w-32 h-32 mx-auto mb-6 relative">
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full blur-xl opacity-40 group-hover:opacity-70 transition-opacity"
-                    animate={{
-                      scale: [1, 1.2, 1],
-                    }}
-                    transition={{ duration: 2, repeat: Infinity, delay: 1 }}
-                  />
-                  <motion.div
-                    className="absolute inset-0 flex items-center justify-center"
-                    animate={{ y: [0, -10, 0] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.6 }}
-                  >
-                    <BookOpenText className="w-16 h-16 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
-                  </motion.div>
+              <GlassCard className="text-center overflow-hidden h-full border border-white/20 dark:border-white/10 shadow-xl group-hover:shadow-2xl transition-all duration-500">
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-br from-amber-400/10 via-transparent to-orange-400/10 pointer-events-none"
+                  animate={{
+                    backgroundPosition: ['0% 100%', '100% 0%', '0% 100%'],
+                  }}
+                  transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+                />
+                <div className="relative z-10 p-6 flex flex-col h-full">
+                  <div className="w-32 h-32 mx-auto mb-6 relative">
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full blur-xl opacity-40 group-hover:opacity-70 transition-opacity"
+                      animate={{
+                        scale: [1, 1.2, 1],
+                      }}
+                      transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+                    />
+                    <motion.div
+                      className="absolute inset-0 flex items-center justify-center"
+                      animate={{ y: [0, -10, 0] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.6 }}
+                    >
+                      <BookOpenText className="w-16 h-16 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
+                    </motion.div>
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Success Stories</h3>
+                  <p className="text-gray-600 dark:text-gray-400 flex-grow">Be inspired by the incredible achievements of our alumni community.</p>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Success Stories</h3>
-                <p className="text-gray-600 dark:text-gray-400 flex-grow">Be inspired by the incredible achievements of our alumni community.</p>
-              </div>
-            </GlassCard>
-          </motion.div>
+              </GlassCard>
+            </motion.div>
+          </Link>
         </div>
       </section>
 
@@ -960,17 +945,7 @@ const Home = () => {
                 }}
               >
                 <GlassCard className="text-center relative overflow-hidden">
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-sky-400/10 to-cyan-400/10"
-                    animate={{
-                      x: ['-100%', '100%'],
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      delay: index * 0.3,
-                    }}
-                  />
+
                   <motion.div
                     animate={{
                       rotate: [0, 360],
@@ -1033,17 +1008,7 @@ const Home = () => {
               >
                 <Link to={feature.link}>
                   <GlassCard className="h-full cursor-pointer relative overflow-hidden group">
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-sky-400/0 via-cyan-400/20 to-sky-400/0"
-                      animate={{
-                        x: ['-100%', '100%'],
-                      }}
-                      transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        delay: index * 0.4,
-                      }}
-                    />
+
                     <motion.div
                       className={`w-16 h-16 rounded-full bg-gradient-to-r ${feature.color} flex items-center justify-center mb-4 relative z-10 shadow-lg`}
                       whileHover={{

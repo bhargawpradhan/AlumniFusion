@@ -406,21 +406,14 @@ const AlumniDirectory = () => {
           {filteredAlumni.map((alumni, index) => (
             <motion.div
               key={alumni.id}
-              initial={{ opacity: 0, y: 50, scale: 0.8, rotateY: -30 }}
-              animate={{ opacity: 1, y: 0, scale: 1, rotateY: 0 }}
+              initial={{ opacity: 0, y: 50, scale: 0.8 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{
                 delay: index * 0.1,
                 type: 'spring',
                 stiffness: 100,
                 damping: 15
               }}
-              whileHover={{
-                scale: 1.08,
-                y: -15,
-                rotateY: 5,
-                transition: { duration: 0.3 }
-              }}
-              whileTap={{ scale: 0.98 }}
             >
               <GlassCard
                 className="cursor-pointer relative overflow-hidden"
@@ -428,17 +421,7 @@ const AlumniDirectory = () => {
                 {...cardContinuousAnimation}
               >
                 {/* Animated gradient background */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-sky-500/10 via-blue-500/10 to-sky-500/10 opacity-0 group-hover:opacity-100 pointer-events-none"
-                  animate={{
-                    x: ['-100%', '100%'],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: 'linear',
-                  }}
-                />
+
 
                 {/* Sparkle effect on hover */}
                 <motion.div

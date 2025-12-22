@@ -4,13 +4,38 @@ import auth from '../middleware/auth.js'
 
 const router = express.Router()
 
-// Get all users (Admin Only)
+// Get current user profile (Auth Required)
+router.get('/profile', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('-password')
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+    res.json(user)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+})
+
+// Alias for /profile
+router.get('/me', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('-password')
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+    res.json(user)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+})
+
+// Get all users (Alumni Directory / Admin List)
 router.get('/', auth, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ message: 'Admin access required' })
-    }
-    const users = await User.find().select('-password')
+    // Admins see all users, regular users only see active ones
+    const query = req.user.role === 'admin' ? {} : { isActive: true };
+    const users = await User.find(query).select('-password -otp -otpExpiry')
     res.json(users)
   } catch (error) {
     res.status(500).json({ message: error.message })

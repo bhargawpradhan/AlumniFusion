@@ -654,12 +654,9 @@ const NetworkingHub = () => {
           ) : (
             <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
               {myConnections.map((person) => (
-                <motion.div
+                <GlassCard
                   key={person._id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/30 transition-all group"
+                  className="p-4"
                 >
                   <div className="flex items-center space-x-3">
                     <div className="relative">
@@ -688,7 +685,7 @@ const NetworkingHub = () => {
                     <MessageSquare size={16} />
                     <span>Message</span>
                   </button>
-                </motion.div>
+                </GlassCard>
               ))}
             </div>
           )}
@@ -720,12 +717,9 @@ const NetworkingHub = () => {
               {activeAlumni.map((person) => {
                 const isConnected = currentUser?.connections?.includes(person._id)
                 return (
-                  <motion.div
+                  <GlassCard
                     key={person._id}
-                    layout
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/30 transition-all group"
+                    className="p-4"
                   >
                     <div className="flex items-center space-x-3 mb-4">
                       <div className="relative">
@@ -747,7 +741,7 @@ const NetworkingHub = () => {
                       <MessageSquare size={16} />
                       <span>Chat</span>
                     </button>
-                  </motion.div>
+                  </GlassCard>
                 )
               })}
             </div>
@@ -787,12 +781,9 @@ const NetworkingHub = () => {
               const isConnected = currentUser?.connections?.includes(person._id)
 
               return (
-                <motion.div
+                <GlassCard
                   key={person._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="p-4 rounded-xl bg-white/5 border border-white/10 hover:border-blue-500/30 transition-all flex flex-col"
+                  className="p-4 flex flex-col"
                 >
                   <div className="flex items-center space-x-3 mb-3">
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white font-bold text-lg">
@@ -831,7 +822,7 @@ const NetworkingHub = () => {
                       )}
                     </button>
                   </div>
-                </motion.div>
+                </GlassCard>
               )
             })}
             {filteredSuggestions.length === 0 && (

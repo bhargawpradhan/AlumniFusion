@@ -4,6 +4,9 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import session from 'express-session'
+import passport from 'passport'
+import './config/passport.js'
 
 dotenv.config()
 
@@ -16,6 +19,20 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'alumnifusion_secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: false, // set to true if using https
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+  })
+)
+app.use(passport.initialize())
+app.use(passport.session())
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 // Routes

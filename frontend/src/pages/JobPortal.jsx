@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Briefcase, MapPin, DollarSign, Clock, Search, Plus, X, Upload, CheckCircle, Sparkles, Star, Zap, TrendingUp, Loader2 } from 'lucide-react'
 import api from '../utils/api'
 import toast from 'react-hot-toast'
-import { cardContinuousAnimation, cardHoverAnimation } from '../animations/cardAnimations'
+import GlassCard from '../components/GlassCard'
 
 const JobPortal = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -540,186 +540,173 @@ const JobPortal = () => {
                     y: { duration: 0.8, type: "spring", stiffness: 100 },
                     rotateX: { duration: 0.8 },
                     scale: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.8 },
-                    opacity: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.8, times: [0, 0.5, 1], values: [1, 0.8, 1] }
                   }}
-                  whileHover={cardHoverAnimation.whileHover}
-                  whileTap={cardHoverAnimation.whileTap}
                   className="group"
                 >
-                  <div
-                    className="relative cursor-pointer h-full overflow-hidden"
+                  <GlassCard
+                    className="cursor-pointer h-full"
                     onClick={() => setSelectedJob(job)}
                   >
-                    <motion.div
-                      className="absolute -inset-0.5 bg-gradient-to-r from-sky-400 via-blue-500 to-sky-600 rounded-2xl opacity-0 group-hover:opacity-75 blur transition-opacity pointer-events-none"
-                      animate={{
-                        backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-                      }}
-                      transition={{ duration: 3, repeat: Infinity }}
-                      style={{ backgroundSize: '200% 100%' }}
-                    />
-                    <div className="relative bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-2xl h-full overflow-hidden">
-                      {/* Floating bubbles inside job cards */}
-                      {Array.from({ length: 6 }, (_, j) => (
-                        <motion.div
-                          key={j}
-                          className="absolute rounded-full pointer-events-none"
-                          style={{
-                            width: Math.random() * 35 + 15,
-                            height: Math.random() * 35 + 15,
-                            left: `${Math.random() * 100}%`,
-                            top: `${Math.random() * 100}%`,
-                            background: 'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.05))',
-                          }}
-                          animate={{
-                            y: [0, -50, 0],
-                            x: [0, Math.random() * 30 - 15, 0],
-                            scale: [1, 1.4, 1],
-                            opacity: [0.2, 0.5, 0.2]
-                          }}
-                          transition={{
-                            duration: 4 + j * 0.5,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                            delay: j * 0.3
-                          }}
-                        />
-                      ))}
+                    {/* Floating bubbles inside job cards */}
+                    {Array.from({ length: 6 }, (_, j) => (
+                      <motion.div
+                        key={j}
+                        className="absolute rounded-full pointer-events-none"
+                        style={{
+                          width: Math.random() * 35 + 15,
+                          height: Math.random() * 35 + 15,
+                          left: `${Math.random() * 100}%`,
+                          top: `${Math.random() * 100}%`,
+                          background: 'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.05))',
+                        }}
+                        animate={{
+                          y: [0, -50, 0],
+                          x: [0, Math.random() * 30 - 15, 0],
+                          scale: [1, 1.4, 1],
+                          opacity: [0.2, 0.5, 0.2]
+                        }}
+                        transition={{
+                          duration: 4 + j * 0.5,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                          delay: j * 0.3
+                        }}
+                      />
+                    ))}
 
-                      <div className="flex items-start justify-between mb-4 relative z-10">
+                    <div className="flex items-start justify-between mb-4 relative z-10">
+                      <motion.div
+                        className="w-16 h-16 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-white font-black text-2xl shadow-lg relative"
+                        whileHover={{ rotate: [0, 360], scale: 1.2 }}
+                        transition={{ duration: 0.8 }}
+                      >
+                        {job.company[0]}
                         <motion.div
-                          className="w-16 h-16 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-white font-black text-2xl shadow-lg relative"
-                          whileHover={{ rotate: [0, 360], scale: 1.2 }}
-                          transition={{ duration: 0.8 }}
-                        >
-                          {job.company[0]}
+                          className="absolute inset-0 rounded-xl bg-white/20"
+                          animate={{
+                            scale: [1, 1.3, 1],
+                            opacity: [0.5, 0, 0.5]
+                          }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        />
+                        {/* Mini bubbles around icon */}
+                        {Array.from({ length: 3 }, (_, k) => (
                           <motion.div
-                            className="absolute inset-0 rounded-xl bg-white/20"
+                            key={k}
+                            className="absolute w-2 h-2 bg-white/60 rounded-full"
+                            style={{
+                              left: `${Math.random() * 100}%`,
+                              top: `${Math.random() * 100}%`,
+                            }}
                             animate={{
-                              scale: [1, 1.3, 1],
+                              scale: [0, 1, 0],
+                              opacity: [0, 1, 0]
+                            }}
+                            transition={{
+                              duration: 2,
+                              repeat: Infinity,
+                              delay: k * 0.4
+                            }}
+                          />
+                        ))}
+                      </motion.div>
+                      <motion.span
+                        className="px-3 py-1.5 bg-sky-500/90 text-white rounded-full text-xs font-bold shadow-lg"
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ delay: index * 0.08 + 0.2, type: "spring" }}
+                        whileHover={{ scale: 1.15, rotate: 5 }}
+                      >
+                        {job.type}
+                      </motion.span>
+                    </div>
+
+                    <motion.h3
+                      className="text-xl font-bold mb-2 text-white relative z-10"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.08 + 0.1 }}
+                    >
+                      {job.title}
+                    </motion.h3>
+
+                    <motion.p
+                      className="text-sky-200 mb-4 font-medium relative z-10"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: index * 0.08 + 0.15 }}
+                    >
+                      {job.company}
+                    </motion.p>
+
+                    <div className="space-y-2.5 relative z-10">
+                      <motion.p
+                        className="text-sm text-sky-100 flex items-center"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.08 + 0.2 }}
+                        whileHover={{ x: 5 }}
+                      >
+                        <MapPin size={16} className="mr-2 text-sky-400" />
+                        {job.location}
+                      </motion.p>
+                      <motion.p
+                        className="text-sm text-sky-100 flex items-center font-bold"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.08 + 0.25 }}
+                        whileHover={{ x: 5 }}
+                      >
+                        <DollarSign size={16} className="mr-2 text-sky-400" />
+                        {job.salary}
+                      </motion.p>
+                      <motion.p
+                        className="text-sm text-sky-300 flex items-center"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.08 + 0.3 }}
+                        whileHover={{ x: 5 }}
+                      >
+                        <Clock size={16} className="mr-2" />
+                        {job.posted}
+                      </motion.p>
+                    </div>
+
+                    <div className="mt-5 flex flex-wrap gap-2 relative z-10">
+                      {job.skills.slice(0, 3).map((skill, i) => (
+                        <motion.span
+                          key={i}
+                          className="px-3 py-1.5 bg-gradient-to-r from-sky-500/80 to-blue-500/80 text-white rounded-full text-xs font-bold shadow-lg relative overflow-hidden"
+                          initial={{ scale: 0, opacity: 0, rotate: -180 }}
+                          animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                          transition={{
+                            delay: index * 0.08 + 0.4 + (i * 0.08),
+                            type: "spring",
+                            stiffness: 200
+                          }}
+                          whileHover={{ scale: 1.2, y: -3, rotate: 5 }}
+                        >
+                          {/* Bubble inside skill badge */}
+                          <motion.div
+                            className="absolute w-3 h-3 bg-white/30 rounded-full"
+                            style={{
+                              left: '20%',
+                              top: '20%',
+                            }}
+                            animate={{
+                              scale: [1, 1.5, 1],
                               opacity: [0.5, 0, 0.5]
                             }}
-                            transition={{ duration: 2, repeat: Infinity }}
-                          />
-                          {/* Mini bubbles around icon */}
-                          {Array.from({ length: 3 }, (_, k) => (
-                            <motion.div
-                              key={k}
-                              className="absolute w-2 h-2 bg-white/60 rounded-full"
-                              style={{
-                                left: `${Math.random() * 100}%`,
-                                top: `${Math.random() * 100}%`,
-                              }}
-                              animate={{
-                                scale: [0, 1, 0],
-                                opacity: [0, 1, 0]
-                              }}
-                              transition={{
-                                duration: 2,
-                                repeat: Infinity,
-                                delay: k * 0.4
-                              }}
-                            />
-                          ))}
-                        </motion.div>
-                        <motion.span
-                          className="px-3 py-1.5 bg-sky-500/90 text-white rounded-full text-xs font-bold shadow-lg"
-                          initial={{ scale: 0, rotate: -180 }}
-                          animate={{ scale: 1, rotate: 0 }}
-                          transition={{ delay: index * 0.08 + 0.2, type: "spring" }}
-                          whileHover={{ scale: 1.15, rotate: 5 }}
-                        >
-                          {job.type}
-                        </motion.span>
-                      </div>
-
-                      <motion.h3
-                        className="text-xl font-bold mb-2 text-white relative z-10"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.08 + 0.1 }}
-                      >
-                        {job.title}
-                      </motion.h3>
-
-                      <motion.p
-                        className="text-sky-200 mb-4 font-medium relative z-10"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: index * 0.08 + 0.15 }}
-                      >
-                        {job.company}
-                      </motion.p>
-
-                      <div className="space-y-2.5 relative z-10">
-                        <motion.p
-                          className="text-sm text-sky-100 flex items-center"
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.08 + 0.2 }}
-                          whileHover={{ x: 5 }}
-                        >
-                          <MapPin size={16} className="mr-2 text-sky-400" />
-                          {job.location}
-                        </motion.p>
-                        <motion.p
-                          className="text-sm text-sky-100 flex items-center font-bold"
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.08 + 0.25 }}
-                          whileHover={{ x: 5 }}
-                        >
-                          <DollarSign size={16} className="mr-2 text-sky-400" />
-                          {job.salary}
-                        </motion.p>
-                        <motion.p
-                          className="text-sm text-sky-300 flex items-center"
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.08 + 0.3 }}
-                          whileHover={{ x: 5 }}
-                        >
-                          <Clock size={16} className="mr-2" />
-                          {job.posted}
-                        </motion.p>
-                      </div>
-
-                      <div className="mt-5 flex flex-wrap gap-2 relative z-10">
-                        {job.skills.slice(0, 3).map((skill, i) => (
-                          <motion.span
-                            key={i}
-                            className="px-3 py-1.5 bg-gradient-to-r from-sky-500/80 to-blue-500/80 text-white rounded-full text-xs font-bold shadow-lg relative overflow-hidden"
-                            initial={{ scale: 0, opacity: 0, rotate: -180 }}
-                            animate={{ scale: 1, opacity: 1, rotate: 0 }}
                             transition={{
-                              delay: index * 0.08 + 0.4 + (i * 0.08),
-                              type: "spring",
-                              stiffness: 200
+                              duration: 2,
+                              repeat: Infinity
                             }}
-                            whileHover={{ scale: 1.2, y: -3, rotate: 5 }}
-                          >
-                            {/* Bubble inside skill badge */}
-                            <motion.div
-                              className="absolute w-3 h-3 bg-white/30 rounded-full"
-                              style={{
-                                left: '20%',
-                                top: '20%',
-                              }}
-                              animate={{
-                                scale: [1, 1.5, 1],
-                                opacity: [0.5, 0, 0.5]
-                              }}
-                              transition={{
-                                duration: 2,
-                                repeat: Infinity
-                              }}
-                            />
-                            <span className="relative z-10">{skill}</span>
-                          </motion.span>
-                        ))}
-                      </div>
+                          />
+                          <span className="relative z-10">{skill}</span>
+                        </motion.span>
+                      ))}
                     </div>
-                  </div>
+                  </GlassCard>
                 </motion.div>
               ))}
             </motion.div>

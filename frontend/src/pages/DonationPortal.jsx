@@ -253,12 +253,16 @@
 // export default DonationPortal
 
 import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Heart, GraduationCap, Building, Calendar, Code, CheckCircle, X, CreditCard, Lock, TrendingUp, Users, Award } from 'lucide-react'
 import api from '../utils/api'
 import toast from 'react-hot-toast'
+import PayNow from '../components/PayNow'
+import GlassCard from '../components/GlassCard'
 
 const DonationPortal = () => {
+  const location = useLocation()
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [donationData, setDonationData] = useState({
     amount: '',
@@ -397,7 +401,14 @@ const DonationPortal = () => {
 
   useEffect(() => {
     fetchStats()
-  }, [])
+
+    // Check for success redirect from Razorpay
+    const params = new URLSearchParams(location.search)
+    if (params.get('success') === 'true') {
+      setShowSuccess(true)
+      toast.success('Payment completed successfully!')
+    }
+  }, [location])
 
   const fetchStats = async () => {
     try {
@@ -540,7 +551,7 @@ const DonationPortal = () => {
               height: bubble.size,
               left: `${bubble.x}%`,
               top: `${bubble.y}%`,
-              background: `radial-gradient(circle at 30% 30%, rgba(236, 72, 153, 0.3), rgba(168, 85, 247, 0.2), rgba(59, 130, 246, 0.1))`,
+              background: `radial-gradient(circle at 30% 30%, rgba(14, 165, 233, 0.3), rgba(6, 182, 212, 0.2), rgba(59, 130, 246, 0.1))`,
               boxShadow: 'inset 0 0 20px rgba(255, 255, 255, 0.3)',
             }}
             animate={{
@@ -667,8 +678,8 @@ const DonationPortal = () => {
                 whileTap={{ scale: 0.95 }}
                 className="h-full"
               >
-                <div
-                  className="relative cursor-pointer h-full bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20 shadow-lg hover:shadow-2xl transition-shadow overflow-hidden group"
+                <GlassCard
+                  className="relative cursor-pointer h-full group !p-5"
                   onClick={() => setSelectedCategory(category)}
                 >
                   <motion.div
@@ -680,7 +691,7 @@ const DonationPortal = () => {
                   </motion.div>
 
                   <h3 className="text-lg font-bold mb-2 text-white relative z-10 line-clamp-1">{category.name}</h3>
-                  <p className="text-purple-200 mb-4 text-xs relative z-10 line-clamp-2 h-8">{category.description}</p>
+                  <p className="text-sky-200 mb-4 text-xs relative z-10 line-clamp-2 h-8">{category.description}</p>
 
                   <div className="space-y-2 relative z-10">
                     <div className="w-full bg-white/20 rounded-full h-2 overflow-hidden relative">
@@ -693,13 +704,13 @@ const DonationPortal = () => {
                     </div>
 
                     <div className="flex justify-between items-center text-xs">
-                      <span className="text-purple-200 font-medium">{progress.toFixed(0)}%</span>
-                      <span className="text-purple-300">
+                      <span className="text-sky-200 font-medium">{progress.toFixed(0)}%</span>
+                      <span className="text-sky-300">
                         ₹{(category.current / 1000).toFixed(0)}K / ₹{(category.goal / 1000).toFixed(0)}K
                       </span>
                     </div>
                   </div>
-                </div>
+                </GlassCard>
               </motion.div>
             )
           })}
@@ -749,7 +760,7 @@ const DonationPortal = () => {
                   />
                 ))}
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-3xl font-black text-pink-400 relative z-10">Make a Donation</h3>
+                  <h3 className="text-3xl font-black text-sky-400 relative z-10">Make a Donation</h3>
                   <motion.button
                     onClick={() => setSelectedCategory(null)}
                     className="p-2 bg-white/10 hover:bg-white/20 rounded-xl relative z-10"
@@ -793,20 +804,20 @@ const DonationPortal = () => {
 
                 <div className="space-y-5 relative z-10">
                   <div>
-                    <label className="block text-sm font-bold mb-3 text-purple-200">Donation Amount (₹)</label>
+                    <label className="block text-sm font-bold mb-3 text-sky-200">Donation Amount (₹)</label>
                     <input
                       type="number"
                       value={donationData.amount}
                       onChange={(e) => setDonationData({ ...donationData, amount: e.target.value })}
                       placeholder="Enter amount"
-                      className="w-full px-5 py-4 rounded-2xl bg-white/10 border-2 border-white/20 focus:border-pink-400 focus:outline-none text-white placeholder-purple-300 backdrop-blur-xl text-lg font-semibold"
+                      className="w-full px-5 py-4 rounded-2xl bg-white/10 border-2 border-white/20 focus:border-sky-400 focus:outline-none text-white placeholder-sky-300 backdrop-blur-xl text-lg font-semibold"
                     />
                     <div className="flex gap-2 mt-3">
                       {[500, 1000, 2500, 5000].map((amount) => (
                         <button
                           key={amount}
                           onClick={() => setDonationData({ ...donationData, amount: amount.toString() })}
-                          className="flex-1 px-4 py-2 bg-gradient-to-r from-pink-500/80 to-rose-500/80 text-white rounded-xl font-bold text-sm hover:scale-105 transition-transform"
+                          className="flex-1 px-4 py-2 bg-gradient-to-r from-sky-500/80 to-blue-500/80 text-white rounded-xl font-bold text-sm hover:scale-105 transition-transform"
                         >
                           ₹{amount}
                         </button>
@@ -815,29 +826,29 @@ const DonationPortal = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-bold mb-3 text-purple-200">Name</label>
+                    <label className="block text-sm font-bold mb-3 text-sky-200">Name</label>
                     <input
                       type="text"
                       value={donationData.name}
                       onChange={(e) => setDonationData({ ...donationData, name: e.target.value })}
                       placeholder="Your full name"
-                      className="w-full px-5 py-4 rounded-2xl bg-white/10 border-2 border-white/20 focus:border-pink-400 focus:outline-none text-white placeholder-purple-300 backdrop-blur-xl"
+                      className="w-full px-5 py-4 rounded-2xl bg-white/10 border-2 border-white/20 focus:border-sky-400 focus:outline-none text-white placeholder-sky-300 backdrop-blur-xl"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-bold mb-3 text-purple-200">Email</label>
+                    <label className="block text-sm font-bold mb-3 text-sky-200">Email</label>
                     <input
                       type="email"
                       value={donationData.email}
                       onChange={(e) => setDonationData({ ...donationData, email: e.target.value })}
                       placeholder="your.email@example.com"
-                      className="w-full px-5 py-4 rounded-2xl bg-white/10 border-2 border-white/20 focus:border-pink-400 focus:outline-none text-white placeholder-purple-300 backdrop-blur-xl"
+                      className="w-full px-5 py-4 rounded-2xl bg-white/10 border-2 border-white/20 focus:border-sky-400 focus:outline-none text-white placeholder-sky-300 backdrop-blur-xl"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-bold mb-3 text-purple-200">Payment Method</label>
+                    <label className="block text-sm font-bold mb-3 text-sky-200">Payment Method</label>
                     <div className="space-y-3">
                       {[
                         { value: 'razorpay', label: 'Razorpay', icon: CreditCard },
@@ -846,7 +857,7 @@ const DonationPortal = () => {
                         <label
                           key={method.value}
                           className={`flex items-center p-4 rounded-2xl cursor-pointer ${donationData.paymentMethod === method.value
-                            ? 'bg-gradient-to-r from-pink-500/80 to-rose-500/80 border-2 border-pink-400'
+                            ? 'bg-gradient-to-r from-sky-500/80 to-blue-500/80 border-2 border-sky-400'
                             : 'bg-white/10 border-2 border-white/20'
                             }`}
                         >
@@ -865,27 +876,37 @@ const DonationPortal = () => {
                     </div>
                   </div>
 
-                  <button
-                    onClick={handleDonate}
-                    disabled={isProcessing}
-                    className="w-full py-5 bg-gradient-to-r from-pink-500 via-rose-500 to-red-500 text-white rounded-2xl font-black text-xl shadow-2xl disabled:opacity-50 flex items-center justify-center"
-                  >
-                    {isProcessing ? (
-                      <>
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                          className="w-7 h-7 border-4 border-white border-t-transparent rounded-full mr-3"
-                        />
-                        <span>Processing...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Heart className="mr-3" size={24} fill="currentColor" />
-                        <span>Donate ₹{donationData.amount || '0'}</span>
-                      </>
-                    )}
-                  </button>
+                  {donationData.paymentMethod === 'razorpay' ? (
+                    <PayNow
+                      onClick={handleDonate}
+                      className="w-full py-5 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white rounded-2xl font-black text-xl shadow-2xl flex items-center justify-center transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                      <Heart className="mr-3" size={24} fill="currentColor" />
+                      <span>Donate ₹{donationData.amount || '0'}</span>
+                    </PayNow>
+                  ) : (
+                    <button
+                      onClick={handleDonate}
+                      disabled={isProcessing}
+                      className="w-full py-5 bg-gradient-to-r from-sky-500 via-blue-500 to-indigo-500 text-white rounded-2xl font-black text-xl shadow-2xl disabled:opacity-50 flex items-center justify-center transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                      {isProcessing ? (
+                        <>
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            className="w-7 h-7 border-4 border-white border-t-transparent rounded-full mr-3"
+                          />
+                          <span>Processing...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Heart className="mr-3" size={24} fill="currentColor" />
+                          <span>Donate ₹{donationData.amount || '0'}</span>
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
               </motion.div>
             </motion.div>
@@ -920,17 +941,17 @@ const DonationPortal = () => {
 
                 <h3 className="text-4xl font-black mb-4 text-green-400">Thank You! 🎉</h3>
 
-                <p className="text-purple-200 mb-3 text-lg font-semibold">Your generous donation of</p>
+                <p className="text-sky-200 mb-3 text-lg font-semibold">Your generous donation of</p>
 
                 <div className="text-5xl font-black text-white mb-4">₹{donationData.amount}</div>
 
-                <p className="text-purple-200 mb-8">
-                  has been received successfully. A receipt has been sent to <span className="font-bold text-pink-300">{donationData.email}</span>
+                <p className="text-sky-200 mb-8">
+                  has been received successfully. A receipt has been sent to <span className="font-bold text-sky-300">{donationData.email}</span>
                 </p>
 
                 <button
                   onClick={resetForm}
-                  className="px-8 py-4 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-2xl font-bold text-lg shadow-xl hover:scale-105 transition-transform"
+                  className="px-8 py-4 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-2xl font-bold text-lg shadow-xl hover:scale-105 transition-transform"
                 >
                   Close
                 </button>

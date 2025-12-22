@@ -44,7 +44,7 @@ const AdminSidebar = () => {
             whileHover={{ rotate: 180, scale: 1.1 }}
             transition={{ duration: 0.5 }}
           >
-            <Shield className="w-8 h-8 text-gradient" />
+            <Shield className="w-8 h-8 text-sky-500" />
           </motion.div>
           <span className="text-xl font-bold text-gradient tracking-tight">Admin Panel</span>
         </div>

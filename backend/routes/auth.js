@@ -2,6 +2,7 @@ import express from 'express'
 import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
 import { sendOtpEmail } from '../services/emailService.js'
+import passport from 'passport'
 
 const router = express.Router()
 
@@ -318,5 +319,49 @@ router.post('/reset-password', async (req, res) => {
     });
   }
 });
+
+// Google OAuth
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
+
+router.get('/google/callback',
+  passport.authenticate('google', {
+    failureRedirect: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=google_auth_failed`
+  }),
+  (req, res) => {
+    try {
+      const user = req.user
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' })
+
+      // Redirect to frontend with token
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000'
+      res.redirect(`${frontendUrl}/login?token=${token}`)
+    } catch (error) {
+      console.error('[AUTH] Google callback error:', error)
+      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=auth_failed`)
+    }
+  }
+)
+
+// GitHub OAuth
+router.get('/github', passport.authenticate('github', { scope: ['user:email'] }))
+
+router.get('/github/callback',
+  passport.authenticate('github', {
+    failureRedirect: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=github_auth_failed`
+  }),
+  (req, res) => {
+    try {
+      const user = req.user
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' })
+
+      // Redirect to frontend with token
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000'
+      res.redirect(`${frontendUrl}/login?token=${token}`)
+    } catch (error) {
+      console.error('[AUTH] GitHub callback error:', error)
+      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=auth_failed`)
+    }
+  }
+)
 
 export default router

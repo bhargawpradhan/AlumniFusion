@@ -211,8 +211,8 @@ const SuccessStories = () => {
             stories.map((story, index) => (
               <motion.div
                 key={story.id}
-                initial={{ opacity: 0, y: 50, scale: 0.9, rotateX: -10 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
+                initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{
                   delay: index * 0.1,
@@ -220,24 +220,13 @@ const SuccessStories = () => {
                   stiffness: 100,
                   damping: 15
                 }}
-                whileHover={{ scale: 1.08, y: -10, transition: { duration: 0.3 } }}
               >
                 <GlassCard
                   className="overflow-hidden relative group"
                   {...cardContinuousAnimation}
                 >
                   {/* Animated gradient background */}
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 pointer-events-none"
-                    animate={{
-                      x: ['-100%', '100%'],
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: 'linear',
-                    }}
-                  />
+
                   <motion.div
                     className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-sky-400/20 to-cyan-400/20 rounded-full blur-3xl"
                     animate={{

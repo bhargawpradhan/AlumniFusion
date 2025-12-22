@@ -204,11 +204,7 @@ const ContactUs = () => {
               </motion.div>
             ) : (
               <GlassCard className="relative overflow-hidden group">
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100"
-                  animate={{ x: ['-100%', '100%'] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-                />
+
                 <h3 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white relative z-10">Send us a Message</h3>
                 <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
                   <div>
@@ -285,11 +281,7 @@ const ContactUs = () => {
           >
             <motion.div whileHover={{ scale: 1.02, y: -5 }}>
               <GlassCard className="relative overflow-hidden group">
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100"
-                  animate={{ x: ['-100%', '100%'] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-                />
+
                 <h3 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white relative z-10">Contact Information</h3>
                 <div className="space-y-6 relative z-10">
                   <motion.div
@@ -361,11 +353,7 @@ const ContactUs = () => {
 
             <motion.div whileHover={{ scale: 1.02, y: -5 }}>
               <GlassCard className="relative overflow-hidden group">
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-indigo-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100"
-                  animate={{ x: ['-100%', '100%'] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-                />
+
                 <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white relative z-10">Office Hours</h3>
                 <div className="space-y-2 text-gray-600 dark:text-gray-400 relative z-10">
                   <p>Monday - Friday: 9:00 AM - 5:00 PM</p>
@@ -378,11 +366,7 @@ const ContactUs = () => {
             {/* Google Map */}
             <motion.div whileHover={{ scale: 1.02, y: -5 }}>
               <GlassCard className="relative overflow-hidden group">
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100"
-                  animate={{ x: ['-100%', '100%'] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-                />
+
                 <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white relative z-10">Find Us</h3>
                 <div className="w-full h-64 rounded-lg overflow-hidden relative z-10">
                   {userLocation ? (

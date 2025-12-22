@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import {
   Users, DollarSign, Briefcase, BookOpen,
-  TrendingUp, Activity, CheckCircle, XCircle
+  TrendingUp, Activity, CheckCircle, XCircle, Search, Calendar as CalendarIcon
 } from 'lucide-react'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell
@@ -13,6 +14,7 @@ import AnimatedButton from '../components/AnimatedButton'
 import toast from 'react-hot-toast'
 
 const AdminDashboard = () => {
+  const navigate = useNavigate()
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalDonations: 0,
@@ -25,6 +27,9 @@ const AdminDashboard = () => {
   })
   const [approvals, setApprovals] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [allDonations, setAllDonations] = useState([])
+  const [showDonationsModal, setShowDonationsModal] = useState(false)
+  const [donationFilter, setDonationFilter] = useState('')
 
   useEffect(() => {
     fetchDashboardData()
@@ -43,6 +48,8 @@ const AdminDashboard = () => {
       const donations = results[1].status === 'fulfilled' ? results[1].value.data : []
       const pendingStories = results[2].status === 'fulfilled' ? results[2].value.data : []
       const pendingJobs = results[3].status === 'fulfilled' ? results[3].value.data : []
+
+      setAllDonations(donations)
 
       // Process Stats
       setStats({
@@ -137,11 +144,12 @@ const AdminDashboard = () => {
     show: { y: 0, opacity: 1 }
   }
 
-  const StatCard = ({ title, value, icon: Icon, color, index }) => (
+  const StatCard = ({ title, value, icon: Icon, color, onClick }) => (
     <motion.div
       variants={itemVariants}
-      whileHover={{ y: -8, scale: 1.02 }}
-      className="h-full"
+      whileTap={{ scale: 0.98 }}
+      className="h-full cursor-pointer"
+      onClick={onClick}
     >
       <GlassCard className="relative overflow-hidden group h-full border-b-4 transition-all duration-300 hover:shadow-2xl"
         style={{ borderBottomColor: color.replace('bg-', '') }}>
@@ -215,28 +223,28 @@ const AdminDashboard = () => {
           value={stats.totalUsers}
           icon={Users}
           color="bg-sky-500"
-          index={0}
+          onClick={() => navigate('/admin/users')}
         />
         <StatCard
           title="Total Donations"
           value={formatCurrency(stats.totalDonations)}
           icon={DollarSign}
           color="bg-emerald-500"
-          index={1}
+          onClick={() => setShowDonationsModal(true)}
         />
         <StatCard
           title="Pending Stories"
           value={stats.pendingStories}
           icon={BookOpen}
           color="bg-indigo-500"
-          index={2}
+          onClick={() => navigate('/admin/content')}
         />
         <StatCard
           title="Pending Jobs"
           value={stats.pendingJobs}
           icon={Briefcase}
           color="bg-amber-500"
-          index={3}
+          onClick={() => navigate('/admin/jobs')}
         />
       </motion.div>
 
@@ -470,6 +478,120 @@ const AdminDashboard = () => {
           )}
         </GlassCard>
       </motion.div>
+
+      {/* Donations Detail Modal */}
+      <AnimatePresence>
+        {showDonationsModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={() => setShowDonationsModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.9, y: 20, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="glass dark:glass-dark rounded-3xl p-8 max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col shadow-2xl border border-white/20"
+            >
+              <div className="flex justify-between items-center mb-8">
+                <div>
+                  <h2 className="text-3xl font-black text-emerald-500 flex items-center">
+                    <DollarSign className="mr-2" /> Donation Records
+                  </h2>
+                  <p className="text-gray-500 dark:text-gray-400 font-medium">Detailed transaction history</p>
+                </div>
+                <button
+                  onClick={() => setShowDonationsModal(false)}
+                  className="p-3 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-500 hover:text-red-500 rounded-2xl transition-all"
+                >
+                  <XCircle size={28} />
+                </button>
+              </div>
+
+              <div className="mb-6 relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <input
+                  type="text"
+                  placeholder="Filter by donor name, email or category..."
+                  value={donationFilter}
+                  onChange={(e) => setDonationFilter(e.target.value)}
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl glass dark:glass-dark border border-gray-100 dark:border-gray-800 focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-medium"
+                />
+              </div>
+
+              <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                <table className="w-full text-left">
+                  <thead className="sticky top-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md z-10">
+                    <tr className="text-xs font-black uppercase tracking-widest text-gray-400 border-b border-gray-100 dark:border-gray-800">
+                      <th className="py-4 px-4">Donor</th>
+                      <th className="py-4 px-4">Amount</th>
+                      <th className="py-4 px-4">Category</th>
+                      <th className="py-4 px-4">Transaction Date</th>
+                      <th className="py-4 px-4 text-right">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
+                    {allDonations
+                      .filter(d =>
+                        (d.donorName || '').toLowerCase().includes(donationFilter.toLowerCase()) ||
+                        (d.donorEmail || '').toLowerCase().includes(donationFilter.toLowerCase()) ||
+                        (d.category || '').toLowerCase().includes(donationFilter.toLowerCase())
+                      )
+                      .map((d, i) => (
+                        <motion.tr
+                          key={d._id}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: Math.min(i * 0.05, 1) }}
+                          className="hover:bg-emerald-50/30 dark:hover:bg-emerald-900/10 transition-colors"
+                        >
+                          <td className="py-4 px-4">
+                            <div className="font-bold text-gray-800 dark:text-gray-200">{d.donorName}</div>
+                            <div className="text-xs text-gray-500 font-medium">{d.donorEmail}</div>
+                          </td>
+                          <td className="py-4 px-4">
+                            <div className="text-emerald-600 dark:text-emerald-400 font-black">
+                              {formatCurrency(d.amount)}
+                            </div>
+                          </td>
+                          <td className="py-4 px-4 text-sm font-bold text-gray-600 dark:text-gray-400">
+                            {d.category}
+                          </td>
+                          <td className="py-4 px-4 text-sm font-medium text-gray-500">
+                            <div className="flex items-center">
+                              <CalendarIcon size={14} className="mr-2 opacity-50" />
+                              {new Date(d.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                            </div>
+                          </td>
+                          <td className="py-4 px-4 text-right">
+                            <span className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-200 dark:border-emerald-800">
+                              {d.status}
+                            </span>
+                          </td>
+                        </motion.tr>
+                      ))}
+                  </tbody>
+                </table>
+
+                {allDonations.length === 0 && (
+                  <div className="text-center py-20 text-gray-500">
+                    <p className="text-lg font-bold">No donation data available.</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800 flex justify-end">
+                <AnimatedButton onClick={() => setShowDonationsModal(false)} className="px-8 font-bold">
+                  Close Records
+                </AnimatedButton>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }

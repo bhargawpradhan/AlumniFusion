@@ -136,11 +136,7 @@ const AboutUs = () => {
             whileHover={{ scale: 1.03, y: -5 }}
           >
             <GlassCard className="relative overflow-hidden group">
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-cyan-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100"
-                animate={{ x: ['-100%', '100%'] }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-              />
+
               <motion.div
                 className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center mb-4 relative z-10"
                 whileHover={{ rotate: 360, scale: 1.1 }}
@@ -164,11 +160,7 @@ const AboutUs = () => {
             whileHover={{ scale: 1.03, y: -5 }}
           >
             <GlassCard className="relative overflow-hidden group">
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-indigo-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100"
-                animate={{ x: ['-100%', '100%'] }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-              />
+
               <motion.div
                 className="w-16 h-16 rounded-full bg-gradient-to-r from-cyan-500 to-indigo-500 flex items-center justify-center mb-4 relative z-10"
                 whileHover={{ rotate: 360, scale: 1.1 }}
@@ -194,11 +186,7 @@ const AboutUs = () => {
           whileHover={{ scale: 1.01 }}
         >
           <GlassCard className="relative overflow-hidden group">
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100"
-              animate={{ x: ['-100%', '100%'] }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-            />
+
             <div className="flex items-center mb-6 relative z-10">
               <motion.div
                 className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center mr-4 shadow-lg"
@@ -294,11 +282,7 @@ const AboutUs = () => {
                   whileHover={{ scale: 1.05, y: -10 }}
                 >
                   <GlassCard className="text-center relative overflow-hidden group">
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-primary-500/10 via-purple-500/10 to-primary-500/10 opacity-0 group-hover:opacity-100"
-                      animate={{ x: ['-100%', '100%'] }}
-                      transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-                    />
+
                     <motion.div
                       className="w-16 h-16 rounded-full bg-gradient-to-r from-primary-500 to-cyan-500 flex items-center justify-center mx-auto mb-4 relative z-10"
                       whileHover={{ rotate: 360, scale: 1.2 }}
@@ -334,11 +318,7 @@ const AboutUs = () => {
                 whileHover={{ scale: 1.05, y: -10 }}
               >
                 <GlassCard className="text-center relative overflow-hidden group">
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100"
-                    animate={{ x: ['-100%', '100%'] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-                  />
+
                   <motion.div
                     className="w-24 h-24 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center mx-auto mb-4 relative z-10"
                     whileHover={{ rotate: 360, scale: 1.15 }}
