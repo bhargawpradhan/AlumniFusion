@@ -3,6 +3,9 @@ import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
 import { sendOtpEmail } from '../services/emailService.js'
 import passport from 'passport'
+import multer from 'multer'
+import path from 'path'
+import fs from 'fs'
 
 const router = express.Router()
 
@@ -32,10 +35,40 @@ router.get('/test-email', async (req, res) => {
   }
 })
 
+// Multer configuration for profile photos
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = 'uploads/profiles'
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true })
+    }
+    cb(null, dir)
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+    cb(null, 'profile-' + uniqueSuffix + path.extname(file.originalname))
+  }
+})
+
+const upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['.jpg', '.jpeg', '.png', '.webp']
+    const ext = path.extname(file.originalname).toLowerCase()
+    if (allowedTypes.includes(ext)) {
+      cb(null, true)
+    } else {
+      cb(new Error('Invalid file type. Only images are allowed.'))
+    }
+  },
+  limits: { fileSize: 2 * 1024 * 1024 } // 2MB limit
+})
+
 // Register
-router.post('/register', async (req, res) => {
+router.post('/register', upload.single('profilePhoto'), async (req, res) => {
   try {
     const { firstName, lastName, email, password, department, batch, location, linkedin, skills, achievements, about } = req.body;
+    const profilePhoto = req.file ? `/uploads/profiles/${req.file.filename}` : null
 
     if (!email) {
       return res.status(400).json({ message: 'Email is required' });
@@ -56,9 +89,10 @@ router.post('/register', async (req, res) => {
       batch,
       location,
       linkedin,
-      skills,
-      achievements,
+      skills: typeof skills === 'string' ? JSON.parse(skills) : skills,
+      achievements: typeof achievements === 'string' ? JSON.parse(achievements) : achievements,
       about,
+      profilePhoto,
     })
 
     await user.save()

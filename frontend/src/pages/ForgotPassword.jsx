@@ -76,11 +76,17 @@ const ForgotPassword = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center py-20 px-4 relative overflow-hidden">
+            {/* Background Decor */}
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-0 left-1/4 w-96 h-96 bg-sky-500/20 rounded-full blur-3xl animate-pulse" />
+                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse delay-700" />
+            </div>
+
             <div className="w-full max-w-md mx-auto relative z-10">
-                <GlassCard>
+                <GlassCard hover={false}>
                     <div className="mb-6">
-                        <Link to="/login" className="text-sky-600 dark:text-sky-400 flex items-center hover:underline mb-4">
-                            <ArrowLeft size={16} className="mr-2" />
+                        <Link to="/login" className="text-sky-600 dark:text-sky-400 flex items-center hover:underline mb-6 group w-fit">
+                            <ArrowLeft size={18} className="mr-2 transform group-hover:-translate-x-1 transition-transform" />
                             Back to Login
                         </Link>
                         <h2 className="text-3xl font-bold text-gradient mb-2">Reset Password</h2>

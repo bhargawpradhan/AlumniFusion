@@ -641,22 +641,29 @@ const Register = () => {
     setIsAssuming(true)
 
     try {
-      const payload = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        password: formData.password,
-        role: 'user',
-        department: formData.department,
-        batch: formData.batch,
-        location: formData.location,
-        linkedin: formData.linkedin,
-        skills: formData.skills,
-        achievements: formData.achievements ? formData.achievements.split('\n').filter(Boolean) : [],
-        about: formData.about
+      const formDataToSend = new FormData()
+      formDataToSend.append('firstName', formData.firstName)
+      formDataToSend.append('lastName', formData.lastName)
+      formDataToSend.append('email', formData.email)
+      formDataToSend.append('password', formData.password)
+      formDataToSend.append('role', 'user')
+      formDataToSend.append('department', formData.department)
+      formDataToSend.append('batch', formData.batch)
+      formDataToSend.append('location', formData.location)
+      formDataToSend.append('linkedin', formData.linkedin)
+      formDataToSend.append('skills', JSON.stringify(formData.skills))
+      formDataToSend.append('achievements', JSON.stringify(formData.achievements ? formData.achievements.split('\n').filter(Boolean) : []))
+      formDataToSend.append('about', formData.about)
+
+      if (formData.profilePhoto) {
+        formDataToSend.append('profilePhoto', formData.profilePhoto)
       }
 
-      const registerResponse = await api.post('/auth/register', payload)
+      const registerResponse = await api.post('/auth/register', formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
 
       // Show success message and redirect to login page
       toast.success('Registration successful! Please login with your credentials.')
@@ -681,6 +688,10 @@ const Register = () => {
 
       <div className="w-full max-w-2xl relative z-10">
         <div className="p-8 backdrop-blur-xl bg-white/90 dark:bg-gray-900/90 rounded-3xl shadow-2xl border border-sky-200/50 dark:border-sky-800/50">
+          <Link to="/login" className="text-sky-600 dark:text-sky-400 flex items-center hover:underline mb-6 group w-fit">
+            <ArrowLeft size={18} className="mr-2 transform group-hover:-translate-x-1 transition-transform" />
+            Back to Login
+          </Link>
           <div className="text-center mb-8">
             <motion.div
               initial={{ scale: 0 }}

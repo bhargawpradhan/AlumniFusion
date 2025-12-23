@@ -150,7 +150,7 @@ const Profile = () => {
                 <div className="w-32 h-32 rounded-full glass dark:glass-dark flex items-center justify-center overflow-hidden mx-auto">
                   {profileData.profilePhoto ? (
                     <img
-                      src={URL.createObjectURL(profileData.profilePhoto)}
+                      src={profileData.profilePhoto instanceof File ? URL.createObjectURL(profileData.profilePhoto) : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${profileData.profilePhoto}`}
                       alt="Profile"
                       className="w-full h-full object-cover"
                     />

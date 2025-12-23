@@ -14,6 +14,7 @@ const Login = () => {
   const [loginType, setLoginType] = useState('user') // 'user' or 'admin'
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isHoveringForm, setIsHoveringForm] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -120,8 +121,8 @@ const Login = () => {
                   Math.sin(i + 2) * 50,
                   0
                 ],
-                scale: [1, 1.1, 0.9, 1.05, 1],
-                opacity: [0, 0.6, 0.8, 0.6, 0],
+                scale: isHoveringForm ? [0, 0] : [1, 1.1, 0.9, 1.05, 1],
+                opacity: isHoveringForm ? [0, 0] : [0, 0.6, 0.8, 0.6, 0],
               }}
               transition={{
                 duration: duration,
@@ -183,12 +184,13 @@ const Login = () => {
       <div className="container mx-auto grid md:grid-cols-2 gap-12 items-center relative z-10">
         <motion.div
           initial={{ opacity: 0, x: -50, scale: 0.9 }}
-          animate={{ opacity: 1, x: 0, scale: 1 }}
+          animate={{
+            opacity: isHoveringForm ? 0 : 1,
+            scale: isHoveringForm ? 0.95 : 1
+          }}
           transition={{
-            duration: 0.8,
-            type: 'spring',
-            stiffness: 100,
-            damping: 15
+            duration: 0.3,
+            ease: 'easeInOut'
           }}
           className="hidden md:block"
         >
@@ -242,7 +244,7 @@ const Login = () => {
           }}
           className="w-full max-w-md mx-auto"
         >
-          <GlassCard className="relative overflow-hidden">
+          <GlassCard hover={false} className="relative overflow-hidden">
             {/* Animated background gradient */}
 
 
@@ -336,14 +338,15 @@ const Login = () => {
                   </label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                    <motion.input
+                    <input
                       type="email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onFocus={() => setIsHoveringForm(true)}
+                      onBlur={() => setIsHoveringForm(false)}
                       className="w-full pl-10 pr-4 py-3 rounded-lg glass dark:glass-dark border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                       placeholder="your.email@example.com"
                       required
-                      whileFocus={{ scale: 1.02 }}
                     />
                   </div>
                 </motion.div>
@@ -358,14 +361,15 @@ const Login = () => {
                   </label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                    <motion.input
+                    <input
                       type={showPassword ? "text" : "password"}
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      onFocus={() => setIsHoveringForm(true)}
+                      onBlur={() => setIsHoveringForm(false)}
                       className="w-full pl-10 pr-12 py-3 rounded-lg glass dark:glass-dark border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                       placeholder="••••••••"
                       required
-                      whileFocus={{ scale: 1.02 }}
                     />
                     <button
                       type="button"
